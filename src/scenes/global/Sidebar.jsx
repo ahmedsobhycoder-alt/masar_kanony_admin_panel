@@ -48,6 +48,8 @@ const sections = [
             { title: "Courts", to: "/courts", icon: <AccountBalanceOutlinedIcon /> },
             { title: "Floors", to: "/floors", icon: <LayersOutlinedIcon /> },
             { title: "Floor Names", to: "/floor-names", icon: <LayersOutlinedIcon /> },
+            { title: "Office Types", to: "/office-types", icon: <MeetingRoomOutlinedIcon /> },
+            { title: "Court activity", to: "/courts/activity", icon: <AccountBalanceOutlinedIcon /> },
             { title: "Offices", to: "/offices", icon: <MeetingRoomOutlinedIcon /> },
         ],
     },

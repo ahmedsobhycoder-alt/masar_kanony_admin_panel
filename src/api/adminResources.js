@@ -55,3 +55,8 @@ export const getPayments = (params) => getResourceList("/payment/", params);
 
 export const createOffice = async (data) => (await axiosClient.post("/offices", data)).data;
 export const getOfficeTypes = (params) => getResourceList("/officeTypes", params);
+
+export const createOfficeType = async (data) => (await axiosClient.post("/officeTypes", data)).data;
+export const updateOfficeType = (id, data) => updateResource("/officeTypes", id, data);
+export const deleteOfficeType = (id) => deleteResource("/officeTypes", id);
+export const getCourtActivity = (params) => getResourceList("/courts/activity", params);

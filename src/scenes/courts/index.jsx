@@ -43,6 +43,7 @@ export default function Courts() {
     ...params, ...(name ? { name } : {}), ...(courtType ? { courtType } : {}), ...(governorate ? { governorate } : {}),
   }), [name, courtType, governorate]);
   const columns = [
+    { field: "history", headerName: "Court activity", width: 150, sortable: false, filterable: false, renderCell: ({ row }) => <Button onClick={() => navigate(`/courts/activity?court=${row._id || row.id}`)}>{t("View history")}</Button> },
     {
       field: "name",
       headerName: "Court",
@@ -95,9 +96,9 @@ export default function Courts() {
       </>}
       columns={columns}
       headerActions={(
-        <Button variant="contained" startIcon={<AddRoundedIcon />} onClick={() => navigate("/courts/create")}>
+        <><Button sx={{ mx: 1 }} onClick={() => navigate("/courts/activity")}>{t("Court activity")}</Button><Button variant="contained" startIcon={<AddRoundedIcon />} onClick={() => navigate("/courts/create")}>
           {t("Create court")}
-        </Button>
+        </Button></>
       )}
       crud={{
         onEdit: (row) => navigate(`/courts/${row._id || row.id}/edit`),

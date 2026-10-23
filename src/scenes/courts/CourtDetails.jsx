@@ -71,6 +71,7 @@ const CourtDetails = () => {
       >
         {t("Back to courts")}
       </Button>
+      <Button onClick={() => navigate(`/courts/activity?court=${id}`)} sx={{ mb: 1.5 }}>{t("View history")}</Button>
       <Header title={court?.name || "Court details"} subtitle={t("Complete court record and facilities")} />
 
       {loading && (

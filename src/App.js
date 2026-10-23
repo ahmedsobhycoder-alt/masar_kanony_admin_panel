@@ -31,6 +31,8 @@ import EditCourt from "./scenes/courts/EditCourt";
 import Notifications from "./scenes/notifications";
 import Floors from "./scenes/floors";
 import FloorNames from "./scenes/floorNames";
+import OfficeTypes from "./scenes/officeTypes";
+import CourtActivity from "./scenes/courts/CourtActivity";
 import Offices from "./scenes/offices";
 import Settings from "./scenes/settings";
 import TermsAndConditions from "./scenes/termsAndConditions";
@@ -114,6 +116,8 @@ function App() {
               <Route path="/governorates" element={<Goverorates />} />
               <Route path="/court-types" element={<CourtTypes />} />
               <Route path="/courts" element={<Courts />} />
+              <Route path="/office-types" element={<OfficeTypes />} />
+              <Route path="/courts/activity" element={<CourtActivity />} />
               <Route path="/courts/create" element={<CreateCourt />} />
               <Route path="/courts/:id/edit" element={<EditCourt />} />
               <Route path="/courts/:id" element={<CourtDetails />} />

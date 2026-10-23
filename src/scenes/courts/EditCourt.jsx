@@ -186,6 +186,7 @@ export default function EditCourt() {
   return (
     <Box m={{ xs: 2, md: 3 }}>
       <Button startIcon={<ArrowBackRoundedIcon />} disabled={saving} onClick={() => navigate("/courts")} sx={{ mb: 1.5 }}>{t("Back to courts")}</Button>
+      <Button onClick={() => navigate(`/courts/activity?court=${id}`)} sx={{ mb: 1.5 }}>{t("View history")}</Button>
       <Header title="Edit court" subtitle={court?.name || "Court information"} />
       {error && <Alert severity="error" sx={{ mb: 2 }}>{t(error)}{!court && <Button disabled={loading} onClick={() => setReload((previous) => previous + 1)}>{t("Retry")}</Button>}</Alert>}
       {notice && <Alert severity="success" sx={{ mb: 2 }}>{t(notice)}</Alert>}
