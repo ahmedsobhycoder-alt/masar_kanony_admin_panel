@@ -1,0 +1,427 @@
+.login-screen {
+  --login-ink: #142633;
+  --login-muted: #778792;
+  --login-gold: #b68d60;
+  display: grid;
+  grid-template-columns: minmax(460px, 1fr) minmax(460px, 1fr);
+  min-height: 100vh;
+  background: #fff;
+  color: var(--login-ink);
+  direction: ltr;
+}
+
+.login-form-panel {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 100vh;
+  padding: 32px clamp(28px, 5vw, 72px) 24px;
+  background: #fff;
+}
+
+.login-panel-top,
+.login-brand,
+.login-options-row,
+.login-footer,
+.login-proof-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.login-brand {
+  justify-content: flex-start;
+  gap: 12px;
+}
+
+.login-brand img {
+  width: 58px;
+  height: 64px;
+  object-fit: contain;
+}
+
+.login-brand-name {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--login-ink);
+}
+
+.login-brand-arabic {
+  color: var(--login-muted);
+  font-size: 12px;
+}
+
+.login-language-toggle .MuiToggleButton-root {
+  border: 0;
+  padding: 5px 8px;
+  color: #647582;
+  font-size: 12px;
+}
+
+.login-language-toggle .Mui-selected {
+  color: var(--login-ink) !important;
+  background: #edf1f2 !important;
+}
+
+.login-form-wrap {
+  width: min(100%, 420px);
+  margin: 30px auto;
+  animation: login-rise 500ms ease both;
+}
+
+.login-access-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 9px;
+  border-radius: 4px;
+  background: #f5f7f6;
+  color: #95734d;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.login-title {
+  margin-top: 17px !important;
+  color: var(--login-ink);
+  font-size: clamp(29px, 3vw, 36px) !important;
+  font-weight: 800 !important;
+  line-height: 1.2 !important;
+}
+
+.login-description {
+  max-width: 370px;
+  margin: 9px 0 26px !important;
+  color: var(--login-muted);
+  font-size: 13px !important;
+  line-height: 1.8 !important;
+}
+
+.login-form {
+  display: grid;
+  gap: 17px;
+}
+
+.login-form .MuiOutlinedInput-root {
+  border-radius: 6px;
+  background: #fff;
+}
+
+.login-form .MuiInputAdornment-root {
+  color: #84929b;
+}
+
+.login-options-row {
+  min-height: 26px;
+  margin-top: -5px;
+  gap: 8px;
+}
+
+.login-options-row .MuiFormControlLabel-label,
+.login-options-row .MuiButton-root {
+  color: #5a6974;
+  font-size: 11px;
+}
+
+.login-options-row .MuiButton-root {
+  color: #95734d;
+  white-space: nowrap;
+}
+
+.login-submit {
+  min-height: 48px;
+  border-radius: 6px !important;
+  background: #8f6b45 !important;
+  color: #fff !important;
+  font-weight: 700 !important;
+  box-shadow: none !important;
+}
+
+.login-submit:hover {
+  background: #785939 !important;
+}
+
+.login-secure-note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  margin-top: 22px;
+  color: #93a0a8;
+  font-size: 10px;
+}
+
+.login-footer {
+  gap: 14px;
+  color: #87949d;
+  font-size: 9px;
+}
+
+.login-footer span:last-child {
+  color: #9a7953;
+  text-align: end;
+}
+
+.login-visual-panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  overflow: hidden;
+  padding: clamp(54px, 8vh, 92px) clamp(44px, 7vw, 96px) 28px;
+  background: #142a37;
+  color: #f5f6f5;
+}
+
+.login-visual-panel::before,
+.login-visual-panel::after {
+  position: absolute;
+  content: "";
+  width: min(58vw, 560px);
+  aspect-ratio: 1;
+  border: 1px solid rgba(182, 141, 96, 0.12);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.login-visual-panel::before {
+  right: -18%;
+  top: 28%;
+}
+
+.login-visual-panel::after {
+  right: -5%;
+  top: 34%;
+}
+
+.login-eyebrow {
+  position: relative;
+  z-index: 1;
+  color: #c19a6a;
+  font-size: 10px !important;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.login-eyebrow::before {
+  display: inline-block;
+  width: 22px;
+  height: 1px;
+  margin-inline-end: 9px;
+  background: #c19a6a;
+  content: "";
+  vertical-align: middle;
+}
+
+.login-hero-title {
+  position: relative;
+  z-index: 1;
+  max-width: 440px;
+  margin: 24px 0 12px !important;
+  color: #f4f6f5;
+  font-size: clamp(34px, 4vw, 48px) !important;
+  font-weight: 700 !important;
+  line-height: 1.12 !important;
+}
+
+.login-hero-arabic {
+  position: relative;
+  z-index: 1;
+  color: #c19a6a;
+  font-size: 18px !important;
+  font-weight: 600 !important;
+}
+
+.login-hero-copy {
+  position: relative;
+  z-index: 1;
+  max-width: 410px;
+  margin-top: 14px !important;
+  color: #a9b7bf;
+  font-size: 12px !important;
+  line-height: 1.8 !important;
+}
+
+.login-courthouse-art {
+  position: relative;
+  flex: 1;
+  min-height: 280px;
+  margin-top: 20px;
+}
+
+.login-orbit {
+  position: absolute;
+  top: 10%;
+  right: 7%;
+  width: min(32vw, 365px);
+  aspect-ratio: 1;
+  border: 1px solid rgba(182, 141, 96, 0.17);
+  border-radius: 50%;
+}
+
+.login-orbit-two {
+  top: 19%;
+  right: 15%;
+  width: min(24vw, 275px);
+}
+
+.login-court-building {
+  position: absolute;
+  top: 28%;
+  right: 18%;
+  width: min(270px, 58%);
+  height: 180px;
+  opacity: 0.72;
+}
+
+.login-court-roof {
+  position: absolute;
+  top: 0;
+  left: 4%;
+  width: 92%;
+  height: 74px;
+  border-top: 2px solid #b68d60;
+  border-left: 2px solid #b68d60;
+  transform: rotate(45deg) scale(0.7);
+}
+
+.login-court-columns {
+  position: absolute;
+  top: 55px;
+  left: 10%;
+  display: flex;
+  justify-content: space-between;
+  width: 80%;
+  height: 85px;
+}
+
+.login-court-columns span {
+  width: 11%;
+  border: 1px solid #b68d60;
+  background: rgba(182, 141, 96, 0.03);
+}
+
+.login-court-base {
+  position: absolute;
+  bottom: 20px;
+  left: 5%;
+  width: 90%;
+  height: 12px;
+  border: 1px solid #b68d60;
+}
+
+.login-verified-chip,
+.login-court-chip {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  border: 1px solid rgba(176, 193, 202, 0.16);
+  background: #203a48;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
+}
+
+.login-verified-chip {
+  top: 34%;
+  right: 21%;
+  gap: 7px;
+  padding: 7px 10px;
+  border-radius: 5px;
+  color: #dfe6e8;
+  font-size: 10px;
+}
+
+.login-verified-chip svg,
+.login-chip-check {
+  color: #c79a63;
+  font-size: 15px;
+}
+
+.login-court-chip {
+  right: 31%;
+  bottom: 25%;
+  gap: 11px;
+  min-width: 240px;
+  padding: 10px 12px;
+  border-radius: 8px;
+}
+
+.login-chip-icon {
+  display: grid;
+  width: 34px;
+  height: 34px;
+  place-items: center;
+  border-radius: 5px;
+  background: rgba(182, 141, 96, 0.15);
+  color: #c79a63;
+}
+
+.login-court-chip p {
+  margin: 0;
+  color: #f1f4f4;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.login-court-chip span {
+  color: #9eb0b9;
+  font-size: 9px;
+}
+
+.login-chip-check {
+  margin-inline-start: auto;
+}
+
+.login-proof-row {
+  position: relative;
+  z-index: 1;
+  gap: 14px;
+  padding-top: 17px;
+  border-top: 1px solid rgba(196, 211, 219, 0.14);
+  color: #9aabb3;
+  font-size: 9px;
+}
+
+@keyframes login-rise {
+  from { opacity: 0; transform: translateY(9px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (max-width: 900px) {
+  .login-screen {
+    grid-template-columns: minmax(360px, 1fr) minmax(320px, 0.8fr);
+  }
+
+  .login-visual-panel {
+    padding-inline: 30px;
+  }
+
+  .login-court-chip {
+    right: 16%;
+  }
+}
+
+@media (max-width: 700px) {
+  .login-screen {
+    display: block;
+  }
+
+  .login-form-panel {
+    min-height: 100svh;
+    padding: 22px 22px 18px;
+  }
+
+  .login-form-wrap {
+    margin: 40px auto;
+  }
+
+  .login-visual-panel {
+    display: none;
+  }
+
+  .login-footer {
+    align-items: flex-start;
+    font-size: 8px;
+  }
+}

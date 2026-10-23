@@ -1,0 +1,93 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+Arabic:wght@400;500;600;700&display=swap");
+
+:lang(ar) {
+  font-family: "Noto Sans Arabic", "Manrope", sans-serif;
+}
+
+html,
+body,
+#root,
+.app,
+.content {
+  height: 100%;
+  width: 100%;
+  font-family: "Manrope", "Noto Sans Arabic", sans-serif;
+}
+
+body {
+  margin: 0;
+  background: #f4f6f5;
+}
+
+.app {
+  display: flex;
+  position: relative;
+}
+
+.MuiDataGrid-root {
+  overflow: hidden;
+  border: 1px solid #e4e9eb !important;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.MuiDataGrid-columnHeaders {
+  border-bottom: 1px solid #e4e9eb !important;
+  background: #f4f6f7 !important;
+  color: #142633;
+}
+
+.MuiDataGrid-columnHeaderTitle {
+  font-weight: 700 !important;
+}
+
+.MuiDataGrid-cell {
+  border-bottom: 1px solid #edf0f1 !important;
+}
+
+.MuiDataGrid-row:hover {
+  background: #f7f9f8 !important;
+}
+
+.MuiDataGrid-footerContainer {
+  border-top: 1px solid #e4e9eb !important;
+  background: #fff !important;
+}
+
+.MuiDataGrid-toolbarContainer {
+  padding: 8px 12px;
+  border-bottom: 1px solid #edf0f1;
+}
+
+.court-detail-panel,
+.court-detail-floor {
+  padding: 18px;
+  border: 1px solid #e4e9eb;
+  border-radius: 8px;
+  background: #fff;
+}
+
+.court-detail-office {
+  height: 100%;
+  padding: 12px;
+  border-radius: 6px;
+  background: #f7f9f8;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #e8edeb;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #98a6a3;
+  border: 2px solid #e8edeb;
+  border-radius: 8px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #718f87;
+}

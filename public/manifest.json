@@ -1,0 +1,20 @@
+{
+  "short_name": "Masar Kanony",
+  "name": "Masar Kanony Legal Administration",
+  "icons": [
+    {
+      "src": "assets/masar-kanony-logo.svg",
+      "type": "image/svg+xml",
+      "sizes": "any"
+    },
+    {
+      "src": "assets/masar-kanony-logo.svg",
+      "type": "image/svg+xml",
+      "sizes": "any"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#142633",
+  "background_color": "#f4f6f5"
+}
