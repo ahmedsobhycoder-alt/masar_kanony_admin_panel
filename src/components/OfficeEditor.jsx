@@ -9,16 +9,22 @@ import AccessTimeRoundedIcon from "@mui/icons-material/AccessTimeRounded";
 import PlaceOutlinedIcon from "@mui/icons-material/PlaceOutlined";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import { useTranslation } from "react-i18next";
-import { createOffice, updateOffice, deleteOffice, getOfficeTypes } from "../api/adminResources";
+import { createOffice, updateOffice, deleteOffice, getOfficeTypes, getCourts, getFloors } from "../api/adminResources";
 export const officeFields = [
   ["roomNumber", "Room"], ["locationDirection", "Location"], ["description", "Description"],
   ["startingWorkingHours", "Opens"], ["endWorkingHours", "Closes"],
   ["services", "Services (comma-separated)"], ["mapUrl", "Map URL"],
 ];
 const message = (error) => error.response?.data?.errors?.map(item => item.msg || item.message).join(", ") || error.response?.data?.message || error.message;
-export default function OfficeEditor({ office, floorId, floorName, onClose, onSaved }) {
+export default function OfficeEditor({ office, floorId, floorName, allowRelocation = false, onClose, onSaved }) {
   const { t } = useTranslation();
   const busy = useRef(false);
+  const [courts, setCourts] = useState([]);
+  const [floors, setFloors] = useState([]);
+  const [locationLoading, setLocationLoading] = useState(false);
+  const [locationError, setLocationError] = useState("");
+  const [selectedCourt, setSelectedCourt] = useState(office?.court?._id || office?.court || "");
+  const [selectedFloor, setSelectedFloor] = useState(office?.floor?._id || office?.floor || "");
   const [types, setTypes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -41,12 +47,46 @@ export default function OfficeEditor({ office, floorId, floorName, onClose, onSa
     })().catch(error => { if (active) setError(message(error)); }).finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
   }, []);
+  useEffect(() => {
+    if (!allowRelocation) return undefined;
+    let active = true;
+    (async () => {
+      const items = [];
+      let page = 1;
+      let result;
+      do {
+        result = await getCourts({ page: page++, limit: 100 });
+        items.push(...(result.data?.list || []));
+      } while (result.data?.paginationResult?.next);
+      if (active) setCourts(items);
+    })().catch(error => { if (active) setLocationError(message(error)); });
+    return () => { active = false; };
+  }, [allowRelocation]);
+  useEffect(() => {
+    if (!allowRelocation || !selectedCourt) return undefined;
+    let active = true;
+    setLocationLoading(true);
+    setLocationError("");
+    setFloors([]);
+    (async () => {
+      const items = [];
+      let page = 1;
+      let result;
+      do {
+        result = await getFloors({ court: selectedCourt, page: page++, limit: 100 });
+        items.push(...(result.data?.list || []));
+      } while (result.data?.paginationResult?.next);
+      if (active) setFloors(items);
+    })().catch(error => { if (active) setLocationError(message(error)); }).finally(() => { if (active) setLocationLoading(false); });
+    return () => { active = false; };
+  }, [allowRelocation, selectedCourt]);
   const save = async event => {
     event.preventDefault();
     if (busy.current) return;
     busy.current = true; setSaving(true); setError("");
     try {
       const payload = { ...values, roomNumber: values.roomNumber.trim(), services: values.services.split(",").map(value => value.trim()).filter(Boolean) };
+      if (allowRelocation) Object.assign(payload, { court: selectedCourt, floor: selectedFloor });
       // Omit the optional empty location on creation.
       if (!office && !payload.locationDirection) delete payload.locationDirection;
       const result = office ? await updateOffice(office._id || office.id, payload) : await createOffice({ ...payload, floor: floorId });
@@ -69,6 +109,19 @@ export default function OfficeEditor({ office, floorId, floorName, onClose, onSa
         <Stack spacing={3}>
           {error && <Alert severity="error">{t(error)}</Alert>}
           {!loading && !types.length && <Alert severity="info">{t("No office types available")}</Alert>}
+          {allowRelocation && <Box><Typography fontWeight={700} mb={2}>{t("Court and floor")}</Typography>
+            {locationError && <Alert severity="error" sx={{ mb: 2 }}>{t(locationError)}</Alert>}
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}><TextField fullWidth select required label={t("Court")} value={selectedCourt} disabled={saving} onChange={event => { setSelectedCourt(event.target.value); setSelectedFloor(""); }}>
+                {!courts.some(court => (court._id || court.id) === selectedCourt) && selectedCourt && <MenuItem value={selectedCourt}>{office?.courtName || t("Court")}</MenuItem>}
+                {courts.map(court => <MenuItem key={court._id || court.id} value={court._id || court.id}>{court.name}</MenuItem>)}
+              </TextField></Grid>
+              <Grid item xs={12} sm={6}><TextField fullWidth select required label={t("Floor")} value={selectedFloor} disabled={saving || locationLoading || !selectedCourt} helperText={locationLoading ? t("Loading") : !floors.length ? t("No floors available for this court") : " "} onChange={event => setSelectedFloor(event.target.value)}>
+                {locationLoading && selectedFloor && <MenuItem value={selectedFloor}>{office?.floorName}</MenuItem>}
+                {floors.map(floor => <MenuItem key={floor._id || floor.id} value={floor._id || floor.id}>{floor.floorName}</MenuItem>)}
+              </TextField></Grid>
+            </Grid>
+          </Box>}
           <Box><Typography fontWeight={700} mb={2}>{t("Office details")}</Typography><Grid container spacing={2}>
             <Grid item xs={12} sm={6}><TextField fullWidth select required label={t("Office type")} value={values.officeType} disabled={saving || loading} helperText={loading ? t("Loading") : " "} onChange={event => setValues({ ...values, officeType: event.target.value })}>
               {types.map(type => <MenuItem key={type._id || type.id} value={type._id || type.id}>{type.name}</MenuItem>)}
@@ -79,7 +132,7 @@ export default function OfficeEditor({ office, floorId, floorName, onClose, onSa
           <Box><Typography fontWeight={700} mb={2}>{t("Services and map")}</Typography><Grid container spacing={2}>{field("services", "Services (comma-separated)", true)}{field("mapUrl", "Map URL", true)}</Grid></Box>
         </Stack>
       </DialogContent>
-      <DialogActions sx={{ px: 3, py: 2, gap: 1 }}><Button disabled={saving} onClick={onClose}>{t("Cancel")}</Button><Button variant="contained" color="secondary" type="submit" startIcon={saving ? <CircularProgress size={16} color="inherit" /> : !office ? <AddRoundedIcon /> : undefined} disabled={saving || loading || !types.length}>{t(saving ? "Saving..." : office ? "Save changes" : "Add office")}</Button></DialogActions>
+      <DialogActions sx={{ px: 3, py: 2, gap: 1 }}><Button disabled={saving} onClick={onClose}>{t("Cancel")}</Button><Button variant="contained" color="secondary" type="submit" startIcon={saving ? <CircularProgress size={16} color="inherit" /> : !office ? <AddRoundedIcon /> : undefined} disabled={saving || loading || !types.length || (allowRelocation && (locationLoading || !!locationError || !floors.some(floor => (floor._id || floor.id) === selectedFloor)))}>{t(saving ? "Saving..." : office ? "Save changes" : "Add office")}</Button></DialogActions>
     </Box>
   </Dialog>;
 }

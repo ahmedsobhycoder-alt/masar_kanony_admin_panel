@@ -59,6 +59,6 @@ export default function Offices() {
       columns={columns}
       crud={{ onEdit: setEditing, remove: deleteOffice }}
     />
-    {editing && <OfficeEditor office={editing} onClose={() => setEditing(null)} onSaved={() => setRevision(value => value + 1)} />}
+    {editing && <OfficeEditor allowRelocation office={editing} onClose={() => setEditing(null)} onSaved={() => setRevision(value => value + 1)} />}
   </>;
 }

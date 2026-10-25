@@ -4,6 +4,9 @@ import { initReactI18next } from "react-i18next";
 const resources = {
   ar: {
     translation: {
+      "Court and floor": "المحكمة والطابق",
+      "No floors available for this court": "لا توجد طوابق متاحة لهذه المحكمة",
+      "Floor does not belong to the selected court": "الطابق لا يتبع المحكمة المحددة",
       "Office Types": "أنواع المكاتب",
       "Office type ID or name already exists": "رقم نوع المكتب أو اسمه موجود بالفعل",
       "Office type ID must be a positive integer": "يجب أن يكون رقم نوع المكتب عددًا صحيحًا موجبًا",
