@@ -89,7 +89,11 @@ export default function OfficeEditor({ office, floorId, floorName, allowRelocati
       if (allowRelocation) Object.assign(payload, { court: selectedCourt, floor: selectedFloor });
       // Omit the optional empty location on creation.
       if (!office && !payload.locationDirection) delete payload.locationDirection;
-      const result = office ? await updateOffice(office._id || office.id, payload) : await createOffice({ ...payload, floor: floorId });
+      // Creating from the main Offices page uses the selected floor; creating
+      // from a court/floor editor keeps using its fixed floor.
+      const result = office
+        ? await updateOffice(office._id || office.id, payload)
+        : await createOffice({ ...payload, floor: allowRelocation ? selectedFloor : floorId });
       onSaved(result.data);
       onClose();
     } catch (error) { setError(message(error)); }

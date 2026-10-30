@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
-import { Grid, TextField } from "@mui/material";
+import { Button, Grid, TextField } from "@mui/material";
+import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import { useTranslation } from "react-i18next";
 import OfficeEditor from "../../components/OfficeEditor";
 import ResourceTable, { displayRelatedValue } from "../../components/ResourceTable";
@@ -39,7 +40,8 @@ export default function Offices() {
   const { t } = useTranslation();
   const [filters, setFilters] = useState({ name: "", governorate: "", courtName: "", courtType: "" });
   const [query, setQuery] = useState(filters);
-  const [editing, setEditing] = useState(null);
+  // `undefined` means the editor is closed; `null` opens it in create mode.
+  const [editing, setEditing] = useState(undefined);
   const [revision, setRevision] = useState(0);
   useEffect(() => {
     const timer = setTimeout(() => setQuery(Object.fromEntries(Object.entries(filters).filter(([, value]) => value.trim()).map(([key, value]) => [key, value.trim()]))), 350);
@@ -53,12 +55,13 @@ export default function Offices() {
       subtitle="Browse court offices and services locations"
       getPage={getPage}
       queryKey={JSON.stringify(query)}
+      headerActions={<Button variant="contained" color="secondary" startIcon={<AddRoundedIcon />} onClick={() => setEditing(null)}>{t("Add office")}</Button>}
       filterControls={<Grid container spacing={2} mb={2}>
         {[["name", "Search by office name"], ["governorate", "Governorate"], ["courtName", "Court"], ["courtType", "Court type"]].map(([key, label]) => <Grid item xs={12} sm={6} md={3} key={key}><TextField fullWidth label={t(label)} value={filters[key]} onChange={event => setFilters({ ...filters, [key]: event.target.value })} /></Grid>)}
       </Grid>}
       columns={columns}
       crud={{ onEdit: setEditing, remove: deleteOffice }}
     />
-    {editing && <OfficeEditor allowRelocation office={editing} onClose={() => setEditing(null)} onSaved={() => setRevision(value => value + 1)} />}
+    {editing !== undefined && <OfficeEditor allowRelocation office={editing} onClose={() => setEditing(undefined)} onSaved={() => setRevision(value => value + 1)} />}
   </>;
 }
