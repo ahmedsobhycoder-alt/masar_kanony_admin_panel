@@ -100,7 +100,7 @@ export default function OfficeEditor({ office, floorId, floorName, allowRelocati
     finally { busy.current = false; setSaving(false); }
   };
   const field = (key, label, wide = false) => <Grid item xs={12} sm={wide ? 12 : 6} key={key}>
-    <TextField fullWidth label={t(label)} required={key === "roomNumber"} value={values[key]} disabled={saving} multiline={key === "description"} minRows={key === "description" ? 2 : undefined} type={key.includes("WorkingHours") ? "time" : "text"} InputLabelProps={{ shrink: true }} helperText={key === "services" ? t("Separate services with commas") : undefined} onChange={event => setValues({ ...values, [key]: event.target.value })} />
+    <TextField fullWidth label={t(label)} value={values[key]} disabled={saving} multiline={key === "description"} minRows={key === "description" ? 2 : undefined} type={key.includes("WorkingHours") ? "time" : "text"} InputLabelProps={{ shrink: true }} helperText={key === "services" ? t("Separate services with commas") : undefined} onChange={event => setValues({ ...values, [key]: event.target.value })} />
   </Grid>;
   return <Dialog open onClose={() => !saving && onClose()} fullWidth maxWidth="md" PaperProps={{ sx: { borderRadius: 3 } }}>
     <Box component="form" onSubmit={save}>
