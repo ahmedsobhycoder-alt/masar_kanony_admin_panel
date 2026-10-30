@@ -99,7 +99,7 @@ const Login = ({ onAuthenticated }) => {
       <section className="login-form-panel" dir={isArabic ? "rtl" : "ltr"}>
         <Box className="login-panel-top">
           <Box className="login-brand">
-            <img src="/assets/masar-kanony-logo.svg" alt={t("Masar Kanony")} />
+            <img src={`${process.env.PUBLIC_URL}/assets/masar-kanony-logo.svg`} alt={t("Masar Kanony")} />
             <Box>
               <Typography className="login-brand-name">Masar Kanony</Typography>
               <Typography className="login-brand-arabic">مسار قانوني</Typography>

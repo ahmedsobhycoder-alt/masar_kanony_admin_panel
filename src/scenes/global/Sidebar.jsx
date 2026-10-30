@@ -117,7 +117,7 @@ const Sidebar = () => {
                         {!collapsed && (
                             <Box display="flex" justifyContent="space-between" alignItems="center" ml="8px">
                                 <Box display="flex" alignItems="center" gap="10px">
-                                    <img src="/assets/masar-kanony-logo.svg" alt="" width="36" height="40" />
+                                    <img src={`${process.env.PUBLIC_URL}/assets/masar-kanony-logo.svg`} alt="" width="36" height="40" />
                                     <Box>
                                         <Typography variant="h6" color={sidebarText} fontWeight="700">Masar Kanony</Typography>
                                         <Typography variant="caption" color={(theme.palette.mode === "dark" ? colors.greenAccent[300] : colors.greenAccent[500])}>مسار قانوني</Typography>

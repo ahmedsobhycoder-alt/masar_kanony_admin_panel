@@ -16,6 +16,8 @@ export const officeFields = [
   ["services", "Services (comma-separated)"], ["mapUrl", "Map URL"],
 ];
 const message = (error) => error.response?.data?.errors?.map(item => item.msg || item.message).join(", ") || error.response?.data?.message || error.message;
+const optionId = (item) => item?._id || item?.id || "";
+const relatedId = (value) => typeof value === "object" ? optionId(value) : value || "";
 export default function OfficeEditor({ office, floorId, floorName, allowRelocation = false, onClose, onSaved }) {
   const { t } = useTranslation();
   const busy = useRef(false);
@@ -23,14 +25,14 @@ export default function OfficeEditor({ office, floorId, floorName, allowRelocati
   const [floors, setFloors] = useState([]);
   const [locationLoading, setLocationLoading] = useState(false);
   const [locationError, setLocationError] = useState("");
-  const [selectedCourt, setSelectedCourt] = useState(office?.court?._id || office?.court || "");
-  const [selectedFloor, setSelectedFloor] = useState(office?.floor?._id || office?.floor || "");
+  const [selectedCourt, setSelectedCourt] = useState(relatedId(office?.court));
+  const [selectedFloor, setSelectedFloor] = useState(relatedId(office?.floor));
   const [types, setTypes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [values, setValues] = useState(() => ({
-    officeType: office?.officeType?._id || office?.officeType || "",
+    officeType: relatedId(office?.officeType),
     ...Object.fromEntries(officeFields.map(([key]) => [key, key === "services" ? (office?.services || []).join(", ") : office?.[key] || (key === "startingWorkingHours" ? "10:00" : key === "endWorkingHours" ? "20:00" : "")])),
   }));
   useEffect(() => {
@@ -80,6 +82,9 @@ export default function OfficeEditor({ office, floorId, floorName, allowRelocati
     })().catch(error => { if (active) setLocationError(message(error)); }).finally(() => { if (active) setLocationLoading(false); });
     return () => { active = false; };
   }, [allowRelocation, selectedCourt]);
+  const courtOptions = courts.filter(optionId);
+  const floorOptions = floors.filter(optionId);
+  const typeOptions = types.filter(optionId);
   const save = async event => {
     event.preventDefault();
     if (busy.current) return;
@@ -112,23 +117,23 @@ export default function OfficeEditor({ office, floorId, floorName, allowRelocati
       <DialogContent dividers sx={{ px: { xs: 2, sm: 3 }, py: 3 }}>
         <Stack spacing={3}>
           {error && <Alert severity="error">{t(error)}</Alert>}
-          {!loading && !types.length && <Alert severity="info">{t("No office types available")}</Alert>}
+          {!loading && !typeOptions.length && <Alert severity="info">{t("No office types available")}</Alert>}
           {allowRelocation && <Box><Typography fontWeight={700} mb={2}>{t("Court and floor")}</Typography>
             {locationError && <Alert severity="error" sx={{ mb: 2 }}>{t(locationError)}</Alert>}
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}><TextField fullWidth select required label={t("Court")} value={selectedCourt} disabled={saving} onChange={event => { setSelectedCourt(event.target.value); setSelectedFloor(""); }}>
-                {!courts.some(court => (court._id || court.id) === selectedCourt) && selectedCourt && <MenuItem value={selectedCourt}>{office?.courtName || t("Court")}</MenuItem>}
-                {courts.map(court => <MenuItem key={court._id || court.id} value={court._id || court.id}>{court.name}</MenuItem>)}
+                {selectedCourt && !courtOptions.some(court => optionId(court) === selectedCourt) ? <MenuItem value={selectedCourt}>{office?.courtName || t("Court")}</MenuItem> : null}
+                {courtOptions.map(court => <MenuItem key={optionId(court)} value={optionId(court)}>{court.name}</MenuItem>)}
               </TextField></Grid>
               <Grid item xs={12} sm={6}><TextField fullWidth select required label={t("Floor")} value={selectedFloor} disabled={saving || locationLoading || !selectedCourt} helperText={locationLoading ? t("Loading") : !floors.length ? t("No floors available for this court") : " "} onChange={event => setSelectedFloor(event.target.value)}>
-                {locationLoading && selectedFloor && <MenuItem value={selectedFloor}>{office?.floorName}</MenuItem>}
-                {floors.map(floor => <MenuItem key={floor._id || floor.id} value={floor._id || floor.id}>{floor.floorName}</MenuItem>)}
+                {locationLoading && selectedFloor ? <MenuItem value={selectedFloor}>{office?.floorName || t("Floor")}</MenuItem> : null}
+                {floorOptions.map(floor => <MenuItem key={optionId(floor)} value={optionId(floor)}>{floor.floorName}</MenuItem>)}
               </TextField></Grid>
             </Grid>
           </Box>}
           <Box><Typography fontWeight={700} mb={2}>{t("Office details")}</Typography><Grid container spacing={2}>
             <Grid item xs={12} sm={6}><TextField fullWidth select required label={t("Office type")} value={values.officeType} disabled={saving || loading} helperText={loading ? t("Loading") : " "} onChange={event => setValues({ ...values, officeType: event.target.value })}>
-              {types.map(type => <MenuItem key={type._id || type.id} value={type._id || type.id}>{type.name}</MenuItem>)}
+              {typeOptions.map(type => <MenuItem key={optionId(type)} value={optionId(type)}>{type.name}</MenuItem>)}
             </TextField></Grid>
             {field("roomNumber", "Room")}{field("locationDirection", "Location", true)}{field("description", "Description", true)}
           </Grid></Box>
@@ -136,7 +141,7 @@ export default function OfficeEditor({ office, floorId, floorName, allowRelocati
           <Box><Typography fontWeight={700} mb={2}>{t("Services and map")}</Typography><Grid container spacing={2}>{field("services", "Services (comma-separated)", true)}{field("mapUrl", "Map URL", true)}</Grid></Box>
         </Stack>
       </DialogContent>
-      <DialogActions sx={{ px: 3, py: 2, gap: 1 }}><Button disabled={saving} onClick={onClose}>{t("Cancel")}</Button><Button variant="contained" color="secondary" type="submit" startIcon={saving ? <CircularProgress size={16} color="inherit" /> : !office ? <AddRoundedIcon /> : undefined} disabled={saving || loading || !types.length || (allowRelocation && (locationLoading || !!locationError || !floors.some(floor => (floor._id || floor.id) === selectedFloor)))}>{t(saving ? "Saving..." : office ? "Save changes" : "Add office")}</Button></DialogActions>
+      <DialogActions sx={{ px: 3, py: 2, gap: 1 }}><Button disabled={saving} onClick={onClose}>{t("Cancel")}</Button><Button variant="contained" color="secondary" type="submit" startIcon={saving ? <CircularProgress size={16} color="inherit" /> : !office ? <AddRoundedIcon /> : undefined} disabled={saving || loading || !typeOptions.length || (allowRelocation && (locationLoading || !!locationError || !floorOptions.some(floor => optionId(floor) === selectedFloor)))}>{t(saving ? "Saving..." : office ? "Save changes" : "Add office")}</Button></DialogActions>
     </Box>
   </Dialog>;
 }
