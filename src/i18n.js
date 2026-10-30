@@ -177,6 +177,8 @@ const resources = {
       "Governorate name": "اسم المحافظة",
       "Court Types": "أنواع المحاكم",
       "Browse court classifications": "استعراض تصنيفات المحاكم",
+      "Manage court classifications": "إدارة تصنيفات المحاكم",
+      "Create court type": "إنشاء نوع محكمة",
       Courts: "المحاكم",
       "Browse courts and their locations": "استعراض المحاكم ومواقعها",
       Floors: "الطوابق",

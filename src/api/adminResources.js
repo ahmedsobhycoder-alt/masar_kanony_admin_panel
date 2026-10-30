@@ -33,6 +33,7 @@ export const getCourtById = async (id) => {
   return response.data;
 };
 export const getCourtTypes = (params) => getResourceList("/courtypes", params);
+export const createCourtType = async (data) => (await axiosClient.post("/courtypes", data)).data;
 export const updateCourtType = (id, data) => updateResource("/courtypes", id, data);
 export const deleteCourtType = (id) => deleteResource("/courtypes", id);
 export const getFloors = (params) => getResourceList("/floors", params);
