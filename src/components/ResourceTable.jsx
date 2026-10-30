@@ -9,9 +9,12 @@ import {
   DialogContentText,
   DialogTitle,
   Grid,
+  IconButton,
   Snackbar,
   Stack,
   TextField,
+  Tooltip,
+  useMediaQuery,
   useTheme,
 } from "@mui/material";
 import { DataGrid, GridToolbar } from "@mui/x-data-grid";
@@ -28,6 +31,7 @@ export const displayRelatedValue = (value) => {
 
 const ResourceTable = ({ title, subtitle, getPage, columns, crud, headerActions, filterControls, queryKey, onRowClick }) => {
   const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const colors = tokens(theme.palette.mode);
   const { t } = useTranslation();
   const [rows, setRows] = useState([]);
@@ -60,27 +64,21 @@ const ResourceTable = ({ title, subtitle, getPage, columns, crud, headerActions,
   const updateColumns = crud ? [{
     field: "actions",
     headerName: t("Actions"),
-    width: 170,
+    width: isMobile ? 104 : 170,
     sortable: false,
     filterable: false,
     disableColumnMenu: true,
+    headerClassName: "resource-actions-header",
+    cellClassName: "resource-actions-cell",
     renderCell: (params) => (
       <Stack direction="row" spacing={0.5}>
-        <Button
-          size="small"
-          startIcon={<EditOutlinedIcon />}
-          onClick={(event) => { event.stopPropagation(); startEditing(params.row); }}
-        >
-          {t("Edit")}
-        </Button>
-        <Button
-          size="small"
-          color="error"
-          startIcon={<DeleteOutlineOutlinedIcon />}
-          onClick={(event) => { event.stopPropagation(); setActionError(""); setDeletingRow(params.row); }}
-        >
-          {t("Delete")}
-        </Button>
+        {isMobile ? <>
+          <Tooltip title={t("Edit")}><IconButton size="small" aria-label={t("Edit")} onClick={(event) => { event.stopPropagation(); startEditing(params.row); }}><EditOutlinedIcon fontSize="small" /></IconButton></Tooltip>
+          <Tooltip title={t("Delete")}><IconButton size="small" color="error" aria-label={t("Delete")} onClick={(event) => { event.stopPropagation(); setActionError(""); setDeletingRow(params.row); }}><DeleteOutlineOutlinedIcon fontSize="small" /></IconButton></Tooltip>
+        </> : <>
+          <Button size="small" startIcon={<EditOutlinedIcon />} onClick={(event) => { event.stopPropagation(); startEditing(params.row); }}>{t("Edit")}</Button>
+          <Button size="small" color="error" startIcon={<DeleteOutlineOutlinedIcon />} onClick={(event) => { event.stopPropagation(); setActionError(""); setDeletingRow(params.row); }}>{t("Delete")}</Button>
+        </>}
       </Stack>
     ),
   }] : [];
@@ -155,13 +153,15 @@ const ResourceTable = ({ title, subtitle, getPage, columns, crud, headerActions,
     };
   }, [getPage, page, pageSize, title, t, refreshKey]);
 
-  const allColumns = [...localizedColumns, ...updateColumns];
+  // Put actions first on narrow screens so they are visible before horizontal
+  // scrolling. The sticky styles keep them available while browsing columns.
+  const allColumns = isMobile ? [...updateColumns, ...localizedColumns] : [...localizedColumns, ...updateColumns];
 
   return (
     <Box m="20px">
-      <Box display="flex" justifyContent="space-between" alignItems="flex-start" gap={2}>
+      <Box display="flex" flexDirection={{ xs: "column", sm: "row" }} justifyContent="space-between" alignItems={{ xs: "stretch", sm: "flex-start" }} gap={2}>
         <Header title={title} subtitle={subtitle} />
-        {headerActions}
+        {headerActions && <Box sx={{ flexShrink: 0, "& > *": { width: { xs: "100%", sm: "auto" } } }}>{headerActions}</Box>}
       </Box>
       {filterControls}
       {error && (
@@ -201,6 +201,17 @@ const ResourceTable = ({ title, subtitle, getPage, columns, crud, headerActions,
           },
           "& .MuiDataGrid-columnHeaderTitle": {
             fontWeight: 700,
+          },
+          "& .resource-actions-header, & .resource-actions-cell": {
+            position: isMobile ? "sticky" : "static",
+            insetInlineStart: isMobile ? 0 : "auto",
+            zIndex: isMobile ? 3 : "auto",
+            backgroundColor: "#fff",
+            borderInlineEnd: isMobile ? "1px solid #e4e9eb" : "none",
+          },
+          "& .resource-actions-header": {
+            zIndex: isMobile ? 4 : "auto",
+            backgroundColor: "#f4f6f7",
           },
           "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
             color: `${colors.grey[100]} !important`,
@@ -246,7 +257,7 @@ const ResourceTable = ({ title, subtitle, getPage, columns, crud, headerActions,
           }}
         />
       </Box>
-      <Dialog open={Boolean(editingRow)} onClose={() => !savingAction && setEditingRow(null)} fullWidth maxWidth="sm">
+      <Dialog open={Boolean(editingRow)} onClose={() => !savingAction && setEditingRow(null)} fullScreen={isMobile} fullWidth maxWidth="sm">
         <Box component="form" onSubmit={saveEdit}>
           <DialogTitle>{t("Edit {{title}}", { title: t(title) })}</DialogTitle>
           <DialogContent>
@@ -276,7 +287,7 @@ const ResourceTable = ({ title, subtitle, getPage, columns, crud, headerActions,
           </DialogActions>
         </Box>
       </Dialog>
-      <Dialog open={Boolean(deletingRow)} onClose={() => !savingAction && setDeletingRow(null)}>
+      <Dialog open={Boolean(deletingRow)} onClose={() => !savingAction && setDeletingRow(null)} fullWidth maxWidth="xs">
         <DialogTitle>{t("Delete this item?")}</DialogTitle>
         <DialogContent>
           <DialogContentText>{t(crud?.deleteMessage || "This action cannot be undone. Referenced records must be removed first.")}</DialogContentText>
