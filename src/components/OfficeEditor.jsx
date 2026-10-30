@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { Alert, Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, MenuItem, Stack, TextField, Grid, Typography, Chip, IconButton, InputAdornment, CircularProgress } from "@mui/material";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
@@ -20,6 +20,7 @@ const optionId = (item) => item?._id || item?.id || "";
 const relatedId = (value) => typeof value === "object" ? optionId(value) : value || "";
 export default function OfficeEditor({ office, floorId, floorName, allowRelocation = false, onClose, onSaved }) {
   const { t } = useTranslation();
+  const formId = useId().replace(/:/g, "");
   const busy = useRef(false);
   const [courts, setCourts] = useState([]);
   const [floors, setFloors] = useState([]);
@@ -105,7 +106,7 @@ export default function OfficeEditor({ office, floorId, floorName, allowRelocati
     finally { busy.current = false; setSaving(false); }
   };
   const field = (key, label, wide = false) => <Grid item xs={12} sm={wide ? 12 : 6} key={key}>
-    <TextField fullWidth label={t(label)} value={values[key]} disabled={saving} multiline={key === "description"} minRows={key === "description" ? 2 : undefined} type={key.includes("WorkingHours") ? "time" : "text"} InputLabelProps={{ shrink: true }} helperText={key === "services" ? t("Separate services with commas") : undefined} onChange={event => setValues({ ...values, [key]: event.target.value })} />
+    <TextField id={`${formId}-${key}`} fullWidth label={t(label)} value={values[key]} disabled={saving} multiline={key === "description"} minRows={key === "description" ? 2 : undefined} type={key.includes("WorkingHours") ? "time" : "text"} InputLabelProps={{ shrink: true }} helperText={key === "services" ? t("Separate services with commas") : undefined} onChange={event => setValues({ ...values, [key]: event.target.value })} />
   </Grid>;
   return <Dialog open onClose={() => !saving && onClose()} fullWidth maxWidth="md" PaperProps={{ sx: { borderRadius: 3 } }}>
     <Box component="form" onSubmit={save}>
@@ -121,18 +122,18 @@ export default function OfficeEditor({ office, floorId, floorName, allowRelocati
           {allowRelocation && <Box><Typography fontWeight={700} mb={2}>{t("Court and floor")}</Typography>
             {locationError && <Alert severity="error" sx={{ mb: 2 }}>{t(locationError)}</Alert>}
             <Grid container spacing={2}>
-              <Grid item xs={12} sm={6}><TextField fullWidth select required label={t("Court")} value={selectedCourt} disabled={saving} onChange={event => { setSelectedCourt(event.target.value); setSelectedFloor(""); }}>
+              <Grid item xs={12} sm={6}><TextField id={`${formId}-court`} fullWidth select required label={t("Court")} value={selectedCourt} disabled={saving} onChange={event => { setSelectedCourt(event.target.value); setSelectedFloor(""); }}>
                 {selectedCourt && !courtOptions.some(court => optionId(court) === selectedCourt) ? <MenuItem value={selectedCourt}>{office?.courtName || t("Court")}</MenuItem> : null}
                 {courtOptions.map(court => <MenuItem key={optionId(court)} value={optionId(court)}>{court.name}</MenuItem>)}
               </TextField></Grid>
-              <Grid item xs={12} sm={6}><TextField fullWidth select required label={t("Floor")} value={selectedFloor} disabled={saving || locationLoading || !selectedCourt} helperText={locationLoading ? t("Loading") : !floors.length ? t("No floors available for this court") : " "} onChange={event => setSelectedFloor(event.target.value)}>
+              <Grid item xs={12} sm={6}><TextField id={`${formId}-floor`} fullWidth select required label={t("Floor")} value={selectedFloor} disabled={saving || locationLoading || !selectedCourt} helperText={locationLoading ? t("Loading") : !floors.length ? t("No floors available for this court") : " "} onChange={event => setSelectedFloor(event.target.value)}>
                 {locationLoading && selectedFloor ? <MenuItem value={selectedFloor}>{office?.floorName || t("Floor")}</MenuItem> : null}
                 {floorOptions.map(floor => <MenuItem key={optionId(floor)} value={optionId(floor)}>{floor.floorName}</MenuItem>)}
               </TextField></Grid>
             </Grid>
           </Box>}
           <Box><Typography fontWeight={700} mb={2}>{t("Office details")}</Typography><Grid container spacing={2}>
-            <Grid item xs={12} sm={6}><TextField fullWidth select required label={t("Office type")} value={values.officeType} disabled={saving || loading} helperText={loading ? t("Loading") : " "} onChange={event => setValues({ ...values, officeType: event.target.value })}>
+            <Grid item xs={12} sm={6}><TextField id={`${formId}-officeType`} fullWidth select required label={t("Office type")} value={values.officeType} disabled={saving || loading} helperText={loading ? t("Loading") : " "} onChange={event => setValues({ ...values, officeType: event.target.value })}>
               {typeOptions.map(type => <MenuItem key={optionId(type)} value={optionId(type)}>{type.name}</MenuItem>)}
             </TextField></Grid>
             {field("roomNumber", "Room")}{field("locationDirection", "Location", true)}{field("description", "Description", true)}
