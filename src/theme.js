@@ -204,6 +204,20 @@ export const themeSettings = (mode, direction = "ltr") => {
     components: {
       MuiPaper: { styleOverrides: { root: { backgroundImage: "none" } } },
       MuiButton: { styleOverrides: { root: { borderRadius: 4 } } },
+      // Applies to every Material UI field that declares `required`, so the
+      // asterisk is accompanied by a clear, localized word in every admin form.
+      MuiFormLabel: {
+        styleOverrides: {
+          asterisk: {
+            "&::after": {
+              content: direction === "rtl" ? '" (مطلوب)"' : '" (Required)"',
+              fontSize: "0.72rem",
+              fontWeight: 600,
+              whiteSpace: "nowrap",
+            },
+          },
+        },
+      },
     },
   };
 };
