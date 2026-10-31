@@ -16,7 +16,10 @@ import {
   Tooltip,
 } from "@mui/material";
 import AddOutlinedIcon from "@mui/icons-material/AddOutlined";
+import ArrowDownwardOutlinedIcon from "@mui/icons-material/ArrowDownwardOutlined";
+import ArrowUpwardOutlinedIcon from "@mui/icons-material/ArrowUpwardOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
+import DragIndicatorOutlinedIcon from "@mui/icons-material/DragIndicatorOutlined";
 import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
 import Header from "./Header";
 import {
@@ -26,9 +29,15 @@ import {
   updateAppPolicy,
 } from "../api/settings";
 
+const newSection = (section = {}) => ({
+  clientId: `${Date.now()}-${Math.random()}`,
+  sectionTitle: section.sectionTitle || "",
+  sectionContent: section.sectionContent || "",
+});
+
 const emptyPolicy = () => ({
   intro: "",
-  sections: [{ sectionTitle: "", sectionContent: "" }],
+  sections: [newSection()],
 });
 
 const PolicySettings = ({ type, title, subtitle }) => {
@@ -40,6 +49,7 @@ const PolicySettings = ({ type, title, subtitle }) => {
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [draggedSection, setDraggedSection] = useState(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -51,10 +61,9 @@ const PolicySettings = ({ type, title, subtitle }) => {
           setPolicyData({
             intro: result.data.intro || "",
             sections: result.data.sections?.length
-              ? result.data.sections.map((section) => ({
-                  sectionTitle: section.sectionTitle || "",
-                  sectionContent: section.sectionContent || "",
-                }))
+              ? [...result.data.sections]
+                  .sort((a, b) => (a.order || 0) - (b.order || 0))
+                  .map(newSection)
               : emptyPolicy().sections,
           });
           setHasPolicy(true);
@@ -89,8 +98,18 @@ const PolicySettings = ({ type, title, subtitle }) => {
   const addSection = () => {
     setPolicyData((current) => ({
       ...current,
-      sections: [...current.sections, { sectionTitle: "", sectionContent: "" }],
+      sections: [newSection(), ...current.sections],
     }));
+  };
+
+  const moveSection = (fromIndex, toIndex) => {
+    if (fromIndex === toIndex || toIndex < 0 || toIndex >= policyData.sections.length) return;
+    setPolicyData((current) => {
+      const sections = [...current.sections];
+      const [moved] = sections.splice(fromIndex, 1);
+      sections.splice(toIndex, 0, moved);
+      return { ...current, sections };
+    });
   };
 
   const removeSection = (index) => {
@@ -174,23 +193,67 @@ const PolicySettings = ({ type, title, subtitle }) => {
           sx={{ mb: 3 }}
         />
         {policyData.sections.map((section, index) => (
-          <Box key={index} sx={{ borderTop: 1, borderColor: "divider", py: 2.5 }}>
+          <Box
+            key={section.clientId}
+            onDragOver={(event) => {
+              event.preventDefault();
+              event.dataTransfer.dropEffect = "move";
+            }}
+            onDrop={(event) => {
+              event.preventDefault();
+              if (draggedSection !== null) moveSection(draggedSection, index);
+              setDraggedSection(null);
+            }}
+            sx={{
+              borderTop: 1,
+              borderColor: "divider",
+              py: 2.5,
+              opacity: draggedSection === index ? 0.55 : 1,
+              transition: "opacity 120ms ease, background-color 120ms ease",
+            }}
+          >
             <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-              <Box component="h3" sx={{ fontSize: 16, fontWeight: 700, m: 0 }}>
-                {t("Section {{number}}", { number: index + 1 })}
+              <Box display="flex" alignItems="center" gap={0.5}>
+                <Tooltip title={t("Drag to reorder")}>
+                  <Box
+                    component="span"
+                    draggable={!loading && !saving}
+                    onDragStart={(event) => {
+                      setDraggedSection(index);
+                      event.dataTransfer.effectAllowed = "move";
+                    }}
+                    onDragEnd={() => setDraggedSection(null)}
+                    sx={{ display: "inline-flex", cursor: loading || saving ? "default" : "grab" }}
+                  >
+                    <DragIndicatorOutlinedIcon sx={{ color: "text.secondary" }} />
+                  </Box>
+                </Tooltip>
+                <Box component="h3" sx={{ fontSize: 16, fontWeight: 700, m: 0 }}>
+                  {t("Section {{number}}", { number: index + 1 })}
+                </Box>
               </Box>
-              <Tooltip title={t("Remove section")}>
-                <span>
+              <Box display="flex" alignItems="center">
+                <Tooltip title={t("Move section up")}><span>
+                  <IconButton onClick={() => moveSection(index, index - 1)} disabled={loading || saving || index === 0} aria-label={t("Move section up")}>
+                    <ArrowUpwardOutlinedIcon />
+                  </IconButton>
+                </span></Tooltip>
+                <Tooltip title={t("Move section down")}><span>
+                  <IconButton onClick={() => moveSection(index, index + 1)} disabled={loading || saving || index === policyData.sections.length - 1} aria-label={t("Move section down")}>
+                    <ArrowDownwardOutlinedIcon />
+                  </IconButton>
+                </span></Tooltip>
+                <Tooltip title={t("Remove section")}><span>
                   <IconButton
-                    aria-label={`Remove section ${index + 1}`}
+                    aria-label={t("Remove section")}
                     color="error"
                     onClick={() => removeSection(index)}
                     disabled={loading || saving || policyData.sections.length === 1}
                   >
                     <DeleteOutlineOutlinedIcon />
                   </IconButton>
-                </span>
-              </Tooltip>
+                </span></Tooltip>
+              </Box>
             </Box>
             <Grid container spacing={2}>
               <Grid item xs={12}>

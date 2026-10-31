@@ -92,11 +92,31 @@ const Sidebar = ({ session }) => {
         <Box
             sx={{
                 height: "100vh",
+                maxHeight: "100vh",
+                "@supports (height: 100dvh)": {
+                    height: "100dvh",
+                    maxHeight: "100dvh",
+                },
                 position: "sticky",
                 top: 0,
                 flexShrink: 0,
-                "& .pro-sidebar": { height: "100vh !important" },
-                "& .pro-sidebar-inner": { height: "100%", overflowY: "auto", overflowX: "hidden", background: `${(theme.palette.mode === "dark" ? colors.primary[600] : colors.primary[100])} !important` },
+                overflow: "hidden",
+                "& .pro-sidebar": { height: "100% !important", minHeight: 0 },
+                "& .pro-sidebar-inner": {
+                    height: "100%",
+                    minHeight: 0,
+                    overflow: "hidden !important",
+                    background: `${(theme.palette.mode === "dark" ? colors.primary[600] : colors.primary[100])} !important`,
+                },
+                "& .pro-sidebar-layout": {
+                    height: "100% !important",
+                    minHeight: 0,
+                    overflowY: "auto !important",
+                    overflowX: "hidden !important",
+                    overscrollBehavior: "contain",
+                    scrollbarGutter: "stable",
+                },
+                "& .pro-menu": { paddingBottom: "28px" },
                 "& .pro-icon-wrapper": { backgroundColor: "transparent !important" },
                 "& .pro-inner-item": {
                     padding: "7px 18px !important",
