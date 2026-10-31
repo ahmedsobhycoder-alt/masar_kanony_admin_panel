@@ -177,29 +177,37 @@ const ResourceTable = ({ title, subtitle, getPage, columns, crud, headerActions,
         minHeight={380}
         sx={{
           "& .MuiDataGrid-root": {
-            border: "1px solid #e4e9eb",
+            border: "1px solid",
+            borderColor: "divider",
             borderRadius: "8px",
-            backgroundColor: "#fff",
+            backgroundColor: "background.paper",
+            color: "text.primary",
           },
           "& .MuiDataGrid-cell": {
-            borderBottom: "1px solid #edf0f1",
-            color: colors.primary[100],
+            borderBottom: "1px solid",
+            borderColor: "divider",
+            color: "text.primary",
           },
           "& .MuiDataGrid-columnHeaders": {
-            backgroundColor: "#f4f6f7",
-            borderBottom: "1px solid #e4e9eb",
-            color: colors.primary[100],
+            backgroundColor: theme.palette.mode === "dark" ? colors.primary[600] : colors.primary[500],
+            borderBottom: "1px solid",
+            borderColor: "divider",
+            color: "text.primary",
           },
           "& .MuiDataGrid-virtualScroller": {
-            backgroundColor: "#fff",
+            backgroundColor: "background.paper",
           },
           "& .MuiDataGrid-footerContainer": {
-            borderTop: "1px solid #e4e9eb",
-            backgroundColor: "#fff",
-            color: colors.grey[500],
+            borderTop: "1px solid",
+            borderColor: "divider",
+            backgroundColor: "background.paper",
+            color: "text.secondary",
           },
           "& .MuiDataGrid-row:hover": {
-            backgroundColor: "#f7f9f8",
+            backgroundColor: "action.hover",
+          },
+          "& .MuiDataGrid-row.Mui-selected, & .MuiDataGrid-row.Mui-selected:hover": {
+            backgroundColor: "action.selected",
           },
           "& .MuiDataGrid-columnHeaderTitle": {
             fontWeight: 700,
@@ -208,15 +216,22 @@ const ResourceTable = ({ title, subtitle, getPage, columns, crud, headerActions,
             position: isMobile ? "sticky" : "static",
             insetInlineStart: isMobile ? 0 : "auto",
             zIndex: isMobile ? 3 : "auto",
-            backgroundColor: "#fff",
-            borderInlineEnd: isMobile ? "1px solid #e4e9eb" : "none",
+            backgroundColor: "background.paper",
+            borderInlineEnd: isMobile ? `1px solid ${theme.palette.divider}` : "none",
           },
           "& .resource-actions-header": {
             zIndex: isMobile ? 4 : "auto",
-            backgroundColor: "#f4f6f7",
+            backgroundColor: theme.palette.mode === "dark" ? colors.primary[600] : colors.primary[500],
           },
           "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
-            color: `${colors.grey[100]} !important`,
+            color: `${theme.palette.text.primary} !important`,
+          },
+          "& .MuiDataGrid-columnSeparator, & .MuiDataGrid-iconButtonContainer, & .MuiTablePagination-root, & .MuiTablePagination-selectIcon": {
+            color: "text.secondary",
+          },
+          "& .MuiDataGrid-overlay": {
+            backgroundColor: "background.paper",
+            color: "text.secondary",
           },
         }}
       >
