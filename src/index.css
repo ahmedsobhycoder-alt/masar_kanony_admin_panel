@@ -26,37 +26,15 @@ body {
 
 .MuiDataGrid-root {
   overflow: hidden;
-  border: 1px solid #e4e9eb !important;
   border-radius: 8px;
-  background: #fff;
-}
-
-.MuiDataGrid-columnHeaders {
-  border-bottom: 1px solid #e4e9eb !important;
-  background: #f4f6f7 !important;
-  color: #142633;
 }
 
 .MuiDataGrid-columnHeaderTitle {
   font-weight: 700 !important;
 }
 
-.MuiDataGrid-cell {
-  border-bottom: 1px solid #edf0f1 !important;
-}
-
-.MuiDataGrid-row:hover {
-  background: #f7f9f8 !important;
-}
-
-.MuiDataGrid-footerContainer {
-  border-top: 1px solid #e4e9eb !important;
-  background: #fff !important;
-}
-
 .MuiDataGrid-toolbarContainer {
   padding: 8px 12px;
-  border-bottom: 1px solid #edf0f1;
 }
 
 .court-detail-panel,
