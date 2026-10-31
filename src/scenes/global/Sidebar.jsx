@@ -26,62 +26,66 @@ import MeetingRoomOutlinedIcon from "@mui/icons-material/MeetingRoomOutlined";
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
 import PrivacyTipOutlinedIcon from "@mui/icons-material/PrivacyTipOutlined";
+import HistoryOutlinedIcon from "@mui/icons-material/HistoryOutlined";
 
 const sections = [
     {
         title: "Workspace",
         items: [
-            { title: "Dashboard", to: "/", icon: <HomeOutlinedIcon /> },
-            { title: "Notifications", to: "/notifications", icon: <NotificationsOutlinedIcon /> },
-            { title: "Users", to: "/users", icon: <PeopleOutlinedIcon /> },
-            { title: "Wallet types", to: "/wallet-types", icon: <AccountBalanceWalletOutlinedIcon /> },
-            { title: "Subscription plan", to: "/subscription-plans", icon: <ReceiptOutlinedIcon /> },
-            { title: "Contacts Information", to: "/contacts", icon: <ContactsOutlinedIcon /> },
-            { title: "Pending payments", to: "/payments", icon: <ReceiptOutlinedIcon /> },
+            { title: "Dashboard", to: "/", permission: "dashboard", icon: <HomeOutlinedIcon /> },
+            { title: "Notifications", to: "/notifications", permission: "notifications", icon: <NotificationsOutlinedIcon /> },
+            { title: "Users", to: "/users", superOnly: true, icon: <PeopleOutlinedIcon /> },
+            { title: "Wallet types", to: "/wallet-types", permission: "wallet-types", icon: <AccountBalanceWalletOutlinedIcon /> },
+            { title: "Subscription plan", to: "/subscription-plans", permission: "subscription-plans", icon: <ReceiptOutlinedIcon /> },
+            { title: "Contacts Information", to: "/contacts", permission: "contacts", icon: <ContactsOutlinedIcon /> },
+            { title: "Pending payments", to: "/payments", permission: "payments", icon: <ReceiptOutlinedIcon /> },
         ],
     },
     {
         title: "Court Directory",
         items: [
-            { title: "Governorates", to: "/governorates", icon: <GavelOutlinedIcon /> },
-            { title: "Court Types", to: "/court-types", icon: <BalanceOutlinedIcon /> },
-            { title: "Courts", to: "/courts", icon: <AccountBalanceOutlinedIcon /> },
-            { title: "Floors", to: "/floors", icon: <LayersOutlinedIcon /> },
-            { title: "Floor Names", to: "/floor-names", icon: <LayersOutlinedIcon /> },
-            { title: "Office Types", to: "/office-types", icon: <MeetingRoomOutlinedIcon /> },
-            { title: "Court activity", to: "/courts/activity", icon: <AccountBalanceOutlinedIcon /> },
-            { title: "Offices", to: "/offices", icon: <MeetingRoomOutlinedIcon /> },
+            { title: "Governorates", to: "/governorates", permission: "governorates", icon: <GavelOutlinedIcon /> },
+            { title: "Court Types", to: "/court-types", permission: "court-types", icon: <BalanceOutlinedIcon /> },
+            { title: "Courts", to: "/courts", permission: "courts", icon: <AccountBalanceOutlinedIcon /> },
+            { title: "Floors", to: "/floors", permission: "floors", icon: <LayersOutlinedIcon /> },
+            { title: "Floor Names", to: "/floor-names", permission: "floor-names", icon: <LayersOutlinedIcon /> },
+            { title: "Office Types", to: "/office-types", permission: "office-types", icon: <MeetingRoomOutlinedIcon /> },
+            { title: "Audit logs", to: "/admin-audit", superOnly: true, icon: <HistoryOutlinedIcon /> },
+            { title: "Offices", to: "/offices", permission: "offices", icon: <MeetingRoomOutlinedIcon /> },
         ],
     },
     {
         title: "Administration",
         items: [
-            { title: "Settings", to: "/settings", icon: <SettingsOutlinedIcon /> },
-            { title: "Terms & Conditions", to: "/terms-and-conditions", icon: <DescriptionOutlinedIcon /> },
-            { title: "Privacy Policy", to: "/privacy-policy", icon: <PrivacyTipOutlinedIcon /> },
+            { title: "Settings", to: "/settings", permission: "settings", icon: <SettingsOutlinedIcon /> },
+            { title: "Terms & Conditions", to: "/terms-and-conditions", permission: "policies", icon: <DescriptionOutlinedIcon /> },
+            { title: "Privacy Policy", to: "/privacy-policy", permission: "policies", icon: <PrivacyTipOutlinedIcon /> },
             //   { title: "Profile Form", to: "/form", icon: <PersonOutlinedIcon /> },
-            { title: "Calendar", to: "/calendar", icon: <CalendarTodayOutlinedIcon /> },
-            { title: "FAQ Page", to: "/faq", icon: <HelpOutlineOutlinedIcon /> },
+            { title: "Calendar", to: "/calendar", permission: "settings", icon: <CalendarTodayOutlinedIcon /> },
+            { title: "FAQ Page", to: "/faq", permission: "settings", icon: <HelpOutlineOutlinedIcon /> },
         ],
     },
     {
         title: "Analytics",
         items: [
-            { title: "Bar Chart", to: "/bar", icon: <BarChartOutlinedIcon /> },
-            { title: "Pie Chart", to: "/pie", icon: <PieChartOutlineOutlinedIcon /> },
-            { title: "Line Chart", to: "/line", icon: <TimelineOutlinedIcon /> },
-            { title: "Geography Chart", to: "/geography", icon: <MapOutlinedIcon /> },
+            { title: "Bar Chart", to: "/bar", permission: "analytics", icon: <BarChartOutlinedIcon /> },
+            { title: "Pie Chart", to: "/pie", permission: "analytics", icon: <PieChartOutlineOutlinedIcon /> },
+            { title: "Line Chart", to: "/line", permission: "analytics", icon: <TimelineOutlinedIcon /> },
+            { title: "Geography Chart", to: "/geography", permission: "analytics", icon: <MapOutlinedIcon /> },
         ],
     },
 ];
 
-const Sidebar = () => {
+const Sidebar = ({ session }) => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const { t } = useTranslation();
     const location = useLocation();
     const [collapsed, setCollapsed] = useState(false);
     const sidebarText = theme.palette.mode === "light" ? "#f4f6f5" : colors.grey[100];
+    const user = session?.user || {};
+    const superAdmin = user.role === "admin" && user.isSuperAdmin !== false;
+    const canSee = (item) => superAdmin || (!item.superOnly && (!item.permission || user.adminPermissions?.includes(item.permission)));
 
     return (
         <Box
@@ -130,7 +134,7 @@ const Sidebar = () => {
                         )}
                     </MenuItem>
 
-                    {sections.map((section) => (
+                    {sections.map((section) => ({ ...section, items: section.items.filter(canSee) })).filter((section) => section.items.length).map((section) => (
                         <Box key={section.title}>
                             {!collapsed && (
                                 <Typography

@@ -42,6 +42,7 @@ import SubscriptionPlans from "./scenes/subscriptionPlans";
 import Payments from "./scenes/payments";
 import PaymentDetails from "./scenes/payments/PaymentDetails";
 import UserDetails from "./scenes/management/UserDetails";
+import AdminAuditLogs from "./scenes/adminAudit";
 
 const ltrCache = createCache({ key: "mui" });
 const rtlCache = createCache({ key: "muirtl", stylisPlugins: [prefixer, rtlPlugin] });
@@ -87,6 +88,13 @@ function App() {
     }
   };
 
+  const guard = (element, permission, superOnly = false) => {
+    const user = session?.user || {};
+    const superAdmin = user.role === "admin" && user.isSuperAdmin !== false;
+    const allowed = superAdmin || (!superOnly && user.adminPermissions?.includes(permission));
+    return allowed ? element : <div style={{ padding: 32 }}>Access denied</div>;
+  };
+
   useEffect(() => {
     document.documentElement.lang = isArabic ? "ar" : "en";
     document.documentElement.dir = direction;
@@ -99,42 +107,43 @@ function App() {
           <CssBaseline />
           {session ? (
             <div className="app" dir={direction}>
-              <Sidebar isSidebar={isSidebar} />
+              <Sidebar isSidebar={isSidebar} session={session} />
               <main className="content">
                 <Topbar setIsSidebar={setIsSidebar} session={session} onLogout={handleLogout} />
               <Routes>
-              <Route path="/notifications" element={<Notifications />} />
-              <Route path="/" element={<Dashboard user={session.user} />} />
-              <Route path="/team" element={<Management key="users" resource="users" />} />
-              <Route path="/users" element={<Management key="users" resource="users" />} />
-              <Route path="/users/:id" element={<UserDetails />} />
-              <Route path="/payments" element={<Payments />} />
+              <Route path="/notifications" element={guard(<Notifications />, "notifications")} />
+              <Route path="/" element={guard(<Dashboard user={session.user} />, "dashboard")} />
+              <Route path="/team" element={guard(<Management key="users" resource="users" />, "users", true)} />
+              <Route path="/users" element={guard(<Management key="users" resource="users" />, "users", true)} />
+              <Route path="/users/:id" element={guard(<UserDetails />, "users", true)} />
+              <Route path="/payments" element={guard(<Payments />, "payments")} />
               <Route path="/payments/:id" element={<PaymentDetails />} />
-              <Route path="/wallet-types" element={<Management key="wallets" resource="wallets" />} />
-              <Route path="/subscription-plans" element={<SubscriptionPlans />} />
-              <Route path="/contacts" element={<Contacts />} />
-              <Route path="/governorates" element={<Goverorates />} />
-              <Route path="/court-types" element={<CourtTypes />} />
-              <Route path="/courts" element={<Courts />} />
-              <Route path="/office-types" element={<OfficeTypes />} />
-              <Route path="/courts/activity" element={<CourtActivity />} />
-              <Route path="/courts/create" element={<CreateCourt />} />
-              <Route path="/courts/:id/edit" element={<EditCourt />} />
-              <Route path="/courts/:id" element={<CourtDetails />} />
-              <Route path="/floors" element={<Floors />} />
-              <Route path="/floor-names" element={<FloorNames />} />
-              <Route path="/offices" element={<Offices />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/terms-and-conditions" element={<TermsAndConditions />} />
-              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/wallet-types" element={guard(<Management key="wallets" resource="wallets" />, "wallet-types")} />
+              <Route path="/subscription-plans" element={guard(<SubscriptionPlans />, "subscription-plans")} />
+              <Route path="/contacts" element={guard(<Contacts />, "contacts")} />
+              <Route path="/governorates" element={guard(<Goverorates />, "governorates")} />
+              <Route path="/court-types" element={guard(<CourtTypes />, "court-types")} />
+              <Route path="/courts" element={guard(<Courts />, "courts")} />
+              <Route path="/office-types" element={guard(<OfficeTypes />, "office-types")} />
+              <Route path="/courts/activity" element={guard(<CourtActivity />, "audit", true)} />
+              <Route path="/admin-audit" element={guard(<AdminAuditLogs />, "audit", true)} />
+              <Route path="/courts/create" element={guard(<CreateCourt />, "courts")} />
+              <Route path="/courts/:id/edit" element={guard(<EditCourt />, "courts")} />
+              <Route path="/courts/:id" element={guard(<CourtDetails />, "courts")} />
+              <Route path="/floors" element={guard(<Floors />, "floors")} />
+              <Route path="/floor-names" element={guard(<FloorNames />, "floor-names")} />
+              <Route path="/offices" element={guard(<Offices />, "offices")} />
+              <Route path="/settings" element={guard(<Settings />, "settings")} />
+              <Route path="/terms-and-conditions" element={guard(<TermsAndConditions />, "policies")} />
+              <Route path="/privacy-policy" element={guard(<PrivacyPolicy />, "policies")} />
               <Route path="/invoices" element={<Payments />} />
               <Route path="/form" element={<Form />} />
-              <Route path="/bar" element={<Bar />} />
-              <Route path="/pie" element={<Pie />} />
-              <Route path="/line" element={<Line />} />
-              <Route path="/faq" element={<FAQ />} />
-              <Route path="/calendar" element={<Calendar />} />
-              <Route path="/geography" element={<Geography />} />
+              <Route path="/bar" element={guard(<Bar />, "analytics")} />
+              <Route path="/pie" element={guard(<Pie />, "analytics")} />
+              <Route path="/line" element={guard(<Line />, "analytics")} />
+              <Route path="/faq" element={guard(<FAQ />, "settings")} />
+              <Route path="/calendar" element={guard(<Calendar />, "settings")} />
+              <Route path="/geography" element={guard(<Geography />, "analytics")} />
               </Routes>
               </main>
             </div>

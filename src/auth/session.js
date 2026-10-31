@@ -27,7 +27,14 @@ export const saveAdminSession = (user, token) => {
   const session = {
     token,
     expiresAt: Date.now() + SESSION_DURATION,
-    user: { id: user.id || user._id, name: user.name, email: user.email, role: user.role },
+    user: {
+      id: user.id || user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      isSuperAdmin: user.isSuperAdmin,
+      adminPermissions: user.adminPermissions || [],
+    },
   };
 
   localStorage.setItem("token", session.token);

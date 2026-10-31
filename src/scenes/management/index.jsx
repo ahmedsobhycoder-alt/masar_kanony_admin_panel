@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Alert, Box, Button, Chip, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, MenuItem, Stack, TextField, Typography } from "@mui/material";
+import { Alert, Box, Button, Checkbox, Chip, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControlLabel, FormGroup, FormLabel, Grid, MenuItem, Stack, TextField, Typography } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import AddRoundedIcon from "@mui/icons-material/AddRounded";
 import { useTranslation } from "react-i18next";
@@ -8,6 +8,11 @@ import axiosClient from "../../api/axoisClient";
 import { useNavigate } from "react-router-dom";
 
 const message = (error) => error.response?.data?.message || error.message || "Save failed";
+const permissionOptions = [
+  "dashboard", "notifications", "wallet-types", "subscription-plans", "contacts", "payments",
+  "governorates", "court-types", "courts", "floors", "floor-names", "office-types", "offices",
+  "settings", "policies", "analytics",
+];
 
 export default function Management({ resource }) {
   const navigate = useNavigate();
@@ -60,6 +65,8 @@ export default function Management({ resource }) {
     setEditor({ row });
     setValues(users ? {
       name: row?.name || "", email: row?.email || "", phone: row?.phone || "", password: "", role: row?.role === "admin" ? "admin" : "user",
+      isSuperAdmin: row?.role === "admin" && row?.isSuperAdmin !== false,
+      adminPermissions: row?.adminPermissions || [],
     } : { paymentType: row?.paymentType || "", phone: row?.phone || "" });
   };
   const confirm = (row, label, data, remove = false) => {
@@ -86,7 +93,7 @@ export default function Management({ resource }) {
   };
   const save = (event) => {
     event.preventDefault();
-    const payload = Object.fromEntries(Object.entries(values).filter(([key]) => key !== "password" || !editor.row).map(([key, value]) => [key, key === "password" ? value : value.trim()]));
+    const payload = Object.fromEntries(Object.entries(values).filter(([key]) => key !== "password" || !editor.row).map(([key, value]) => [key, typeof value === "string" && key !== "password" ? value.trim() : value]));
     mutate(() => editor.row ? axiosClient.put(`${path}/${editor.row._id || editor.row.id}`, payload) : axiosClient.post(path, payload));
   };
   const execute = () => mutate(async () => {
@@ -101,7 +108,7 @@ export default function Management({ resource }) {
     { field: "email", headerName: t("Email"), flex: 1.3, minWidth: 210 },
     { field: "phone", headerName: t("Phone Number"), minWidth: 140, flex: 1 },
     { field: "isSubscribed", headerName: t("Subscription"), width: 160, renderCell: ({ value }) => <Chip size="small" label={t(value ? "Subscribed" : "Unsubscribed")} color={value ? "success" : "default"} /> },
-    { field: "role", headerName: t("Role"), width: 110, renderCell: ({ value }) => t(value) },
+    { field: "role", headerName: t("Role"), width: 150, renderCell: ({ row, value }) => t(value === "admin" ? (row.isSuperAdmin !== false ? "Super admin" : "Sub-admin") : value) },
   ] : [
     { field: "paymentType", headerName: t("Wallet type"), flex: 1, minWidth: 180 },
     { field: "phone", headerName: t("Wallet phone"), flex: 1, minWidth: 160 },
@@ -138,6 +145,10 @@ export default function Management({ resource }) {
             {actionError && <Alert severity="error">{t(actionError)}</Alert>}
             {editorFields.map(([name, label]) => <TextField key={name} fullWidth required label={t(label)} type={name === "password" ? "password" : name === "email" ? "email" : "text"} value={values[name] || ""} disabled={saving} onChange={(event) => setValues({ ...values, [name]: event.target.value })} inputProps={name === "phone" ? { pattern: "01[0125][0-9]{8}", maxLength: 11 } : name === "password" ? { minLength: 8, maxLength: 72 } : name === "name" ? { minLength: 2, maxLength: 20, pattern: ".*\\S.*" } : name === "paymentType" ? { minLength: 2, maxLength: 50, pattern: ".*\\S.*" } : {}} />)}
             {users && <TextField select label={t("Role")} value={values.role || "user"} disabled={saving} onChange={(event) => setValues({ ...values, role: event.target.value })}>{[...new Set([values.role, "user", "admin"])].filter(Boolean).map((role) => <MenuItem key={role} value={role}>{t(role)}</MenuItem>)}</TextField>}
+            {users && values.role === "admin" && <FormControlLabel control={<Checkbox checked={values.isSuperAdmin === true} disabled={saving} onChange={(event) => setValues({ ...values, isSuperAdmin: event.target.checked })} />} label={t("Super admin (full access)")} />}
+            {users && values.role === "admin" && !values.isSuperAdmin && <Box><FormLabel>{t("Sidebar permissions")}</FormLabel><FormGroup row>
+              {permissionOptions.map((permission) => <FormControlLabel key={permission} sx={{ width: { xs: "100%", sm: "45%" } }} control={<Checkbox checked={values.adminPermissions?.includes(permission) || false} disabled={saving} onChange={(event) => setValues((current) => ({ ...current, adminPermissions: event.target.checked ? [...(current.adminPermissions || []), permission] : (current.adminPermissions || []).filter((item) => item !== permission) }))} />} label={t(permission)} />)}
+            </FormGroup></Box>}
             {users && !editor?.row && <Typography variant="caption">{t("New accounts are verified and ready to sign in.")}</Typography>}
           </Stack></DialogContent>
           <DialogActions><Button disabled={saving} onClick={() => setEditor(null)}>{t("Cancel")}</Button><Button disabled={saving} type="submit" variant="contained">{t(saving ? "Saving..." : "Save")}</Button></DialogActions>
