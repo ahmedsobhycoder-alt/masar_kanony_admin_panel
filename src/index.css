@@ -22,6 +22,8 @@ body {
 .app {
   display: flex;
   position: relative;
+  min-height: 100vh;
+  align-items: stretch;
 }
 
 .MuiDataGrid-root {
@@ -37,6 +39,17 @@ body {
   padding: 8px 12px;
 }
 
+.MuiDataGrid-footerContainer {
+  min-height: 64px !important;
+  justify-content: center !important;
+}
+
+@media (max-width: 600px) {
+  .MuiDataGrid-footerContainer {
+    min-height: 150px !important;
+  }
+}
+
 .court-detail-panel,
 .court-detail-floor {
   padding: 18px;
@@ -45,11 +58,25 @@ body {
   background: #fff;
 }
 
+.theme-dark .court-detail-panel,
+.theme-dark .court-detail-floor {
+  border-color: #3e535d;
+  background: #263640;
+  color: #f4f6f5;
+  box-shadow: 0 6px 20px rgba(5, 14, 19, 0.18);
+}
+
 .court-detail-office {
   height: 100%;
   padding: 12px;
   border-radius: 6px;
   background: #f7f9f8;
+}
+
+.theme-dark .court-detail-office {
+  border: 1px solid #3e535d;
+  background: #30434d;
+  color: #f4f6f5;
 }
 
 ::-webkit-scrollbar {

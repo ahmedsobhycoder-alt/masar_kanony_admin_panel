@@ -24,6 +24,7 @@ import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined
 import Header from "./Header";
 import { tokens } from "../theme";
 import DataGridToolbar from "./DataGridToolbar";
+import DataGridPagination from "./DataGridPagination";
 
 export const displayRelatedValue = (value) => {
   if (!value || typeof value !== "object") return value || "—";
@@ -251,11 +252,12 @@ const ResourceTable = ({ title, subtitle, getPage, columns, crud, headerActions,
             setPage(0);
           }}
           rowsPerPageOptions={[5, 10, 20]}
-          components={{ Toolbar: DataGridToolbar }}
+          components={{ Toolbar: DataGridToolbar, Pagination: DataGridPagination }}
           componentsProps={{
             toolbar: {
               fileName: title.toLowerCase().replace(/\s+/g, "-"),
             },
+            pagination: { pageSizeOptions: [5, 10, 20] },
           }}
           localeText={{
             noRowsLabel: t(`No ${title.toLowerCase()} found`),

@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import Header from "../../components/Header";
 import axiosClient from "../../api/axoisClient";
 import { useNavigate } from "react-router-dom";
+import DataGridPagination from "../../components/DataGridPagination";
 
 const message = (error) => error.response?.data?.message || error.message || "Save failed";
 const permissionOptions = [
@@ -137,7 +138,7 @@ export default function Management({ resource, adminOnly = false }) {
         {cards.map(([label, value]) => <Grid item xs={12} md={4} key={label}><Box className="court-detail-panel"><Typography color="text.secondary">{t(label)}</Typography><Typography variant="h3" mt={1}>{loading ? "…" : value ?? "—"}</Typography>{label === "Most used wallet type" && stats.mostUsed && <Typography variant="caption">{t("Based on all payment requests")}: {stats.mostUsed.count}</Typography>}</Box></Grid>)}
       </Grid>}
       <TextField fullWidth label={t(users ? "Search by name, phone or email" : "Search by wallet type or phone")} value={search} onChange={(event) => setSearch(event.target.value)} sx={{ mb: 2 }} />
-      <Box height="65vh" minHeight={400}><DataGrid rows={rows} getRowId={(row) => row._id || row.id} columns={columns.map((column) => ({ ...column, sortable: false }))} loading={loading} rowCount={total} page={page} pageSize={pageSize} pagination paginationMode="server" onPageChange={setPage} onPageSizeChange={(size) => { setPageSize(size); setPage(0); }} rowsPerPageOptions={[10, 25, 50]} disableSelectionOnClick disableColumnFilter disableColumnMenu localeText={{ noRowsLabel: t("No data"), footerPaginationRowsPerPage: t("Rows per page:") }} /></Box>
+      <Box height="65vh" minHeight={400}><DataGrid rows={rows} getRowId={(row) => row._id || row.id} columns={columns.map((column) => ({ ...column, sortable: false }))} loading={loading} rowCount={total} page={page} pageSize={pageSize} pagination paginationMode="server" onPageChange={setPage} onPageSizeChange={(size) => { setPageSize(size); setPage(0); }} rowsPerPageOptions={[10, 25, 50]} components={{ Pagination: DataGridPagination }} componentsProps={{ pagination: { pageSizeOptions: [10, 25, 50] } }} disableSelectionOnClick disableColumnFilter disableColumnMenu localeText={{ noRowsLabel: t("No data") }} /></Box>
       <Dialog open={!!editor} onClose={() => { if (!saving) setEditor(null); }} fullWidth maxWidth="sm">
         <Box component="form" onSubmit={save}>
           <DialogTitle>{t(editor?.row ? (adminOnly ? "Edit admin" : users ? "Edit user" : "Edit wallet") : (adminOnly ? "Add admin" : users ? "Create New User" : "Create wallet"))}</DialogTitle>

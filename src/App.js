@@ -106,7 +106,7 @@ function App() {
         <ThemeProvider theme={theme}>
           <CssBaseline />
           {session ? (
-            <div className="app" dir={direction}>
+            <div className={`app theme-${theme.palette.mode}`} dir={direction}>
               <Sidebar isSidebar={isSidebar} session={session} />
               <main className="content">
                 <Topbar setIsSidebar={setIsSidebar} session={session} onLogout={handleLogout} />

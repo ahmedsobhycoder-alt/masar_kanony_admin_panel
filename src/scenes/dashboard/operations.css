@@ -3,6 +3,25 @@
   --operations-muted: #71808a;
   --operations-line: #e4e9eb;
   --operations-gold: #a77d4f;
+  --operations-surface: #fff;
+  --operations-surface-soft: #f4f6f5;
+  --operations-surface-subtle: #f7f9f9;
+  --operations-surface-hover: #f8faf9;
+  --operations-surface-warm: #f9f6f0;
+  --operations-shadow: 0 3px 14px rgba(20, 38, 51, 0.035);
+}
+
+.theme-dark .operations-dashboard {
+  --operations-ink: #f4f6f5;
+  --operations-muted: #bbc6c3;
+  --operations-line: #3e535d;
+  --operations-gold: #d7b78f;
+  --operations-surface: #263640;
+  --operations-surface-soft: #30434d;
+  --operations-surface-subtle: #1f3039;
+  --operations-surface-hover: #354a55;
+  --operations-surface-warm: #342f2a;
+  --operations-shadow: 0 7px 22px rgba(4, 12, 17, 0.22);
 }
 
 .operations-dashboard .operations-heading {
@@ -34,8 +53,8 @@
   overflow: hidden;
   border: 1px solid var(--operations-line);
   border-radius: 8px;
-  background: #fff;
-  box-shadow: 0 3px 14px rgba(20, 38, 51, 0.035);
+  background: var(--operations-surface);
+  box-shadow: var(--operations-shadow);
 }
 
 .operations-stat-icon,
@@ -46,13 +65,17 @@
   height: 42px;
   place-items: center;
   border-radius: 8px;
-  background: #f4f6f5;
+  background: var(--operations-surface-soft);
   color: var(--operations-gold);
 }
 
 .operations-stat-card.sage .operations-stat-icon { color: #557b70; }
 .operations-stat-card.blue .operations-stat-icon { color: #486b83; }
-.operations-stat-card.amber .operations-stat-icon { color: #a47538; background: #fbf5eb; }
+.operations-stat-card.amber .operations-stat-icon { color: #a47538; background: var(--operations-surface-warm); }
+
+.theme-dark .operations-stat-card.sage .operations-stat-icon { color: #9bc5b8; }
+.theme-dark .operations-stat-card.blue .operations-stat-icon { color: #9fc2d8; }
+.theme-dark .operations-stat-card.amber .operations-stat-icon { color: #e3ba82; }
 
 .operations-stat-content {
   min-width: 0;
@@ -79,6 +102,11 @@
   background: #faf1e3;
   color: #926d3c;
   font-size: 9px;
+}
+
+.theme-dark .operations-stat-value .MuiChip-root {
+  background: #4a3c2d;
+  color: #f0c995;
 }
 
 .operations-stat-detail {
@@ -110,8 +138,8 @@
   overflow: hidden;
   border: 1px solid var(--operations-line);
   border-radius: 8px;
-  background: #fff;
-  box-shadow: 0 3px 14px rgba(20, 38, 51, 0.035);
+  background: var(--operations-surface);
+  box-shadow: var(--operations-shadow);
 }
 
 .operations-panel-heading {
@@ -158,16 +186,16 @@
 
 .operations-table-head {
   min-height: 38px;
-  background: #f7f9f9;
-  color: #74818a;
+  background: var(--operations-surface-subtle);
+  color: var(--operations-muted);
   font-size: 10px;
   font-weight: 700;
 }
 
 .operations-table-row {
   min-height: 57px;
-  border-top: 1px solid #edf0f1;
-  color: #53636e;
+  border-top: 1px solid var(--operations-line);
+  color: var(--operations-muted);
   cursor: pointer;
   font-size: 11px;
   transition: background 140ms ease;
@@ -175,7 +203,7 @@
 
 .operations-table-row:hover,
 .operations-table-row:focus-visible {
-  background: #f8faf9;
+  background: var(--operations-surface-hover);
   outline: none;
 }
 
@@ -200,7 +228,7 @@
 
 .operations-table-row small {
   margin-top: 3px;
-  color: #8a969d;
+  color: var(--operations-muted);
   font-size: 9px;
 }
 
@@ -233,11 +261,16 @@
   box-shadow: 0 0 0 4px #eaf2ec;
 }
 
+.theme-dark .status-indicator {
+  background: #86b397;
+  box-shadow: 0 0 0 4px rgba(134, 179, 151, 0.16);
+}
+
 .directory-status-meter {
   margin: 0 16px 14px;
   padding: 13px;
   border-radius: 6px;
-  background: #f7f9f8;
+  background: var(--operations-surface-soft);
 }
 
 .directory-status-line {
@@ -281,14 +314,14 @@
 
 .review-panel {
   padding: 17px;
-  background: #f9f6f0;
+  background: var(--operations-surface-warm);
 }
 
 .review-panel-icon {
   width: 34px;
   height: 34px;
   margin-bottom: 12px;
-  background: #f2e8d8;
+  background: var(--operations-surface-soft);
 }
 
 .review-panel > p {
@@ -316,7 +349,7 @@
 .review-panel .MuiLinearProgress-root {
   height: 4px;
   border-radius: 4px;
-  background: #e8dfd0;
+  background: var(--operations-line);
 }
 
 .review-panel .review-footnote {

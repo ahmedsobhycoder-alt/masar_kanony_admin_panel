@@ -91,7 +91,12 @@ const Sidebar = ({ session }) => {
     return (
         <Box
             sx={{
-                "& .pro-sidebar-inner": { background: `${(theme.palette.mode === "dark" ? colors.primary[600] : colors.primary[100])} !important` },
+                height: "100vh",
+                position: "sticky",
+                top: 0,
+                flexShrink: 0,
+                "& .pro-sidebar": { height: "100vh !important" },
+                "& .pro-sidebar-inner": { height: "100%", overflowY: "auto", overflowX: "hidden", background: `${(theme.palette.mode === "dark" ? colors.primary[600] : colors.primary[100])} !important` },
                 "& .pro-icon-wrapper": { backgroundColor: "transparent !important" },
                 "& .pro-inner-item": {
                     padding: "7px 18px !important",
