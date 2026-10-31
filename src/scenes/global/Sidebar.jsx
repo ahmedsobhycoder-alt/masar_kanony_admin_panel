@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ProSidebar, Menu, MenuItem } from "react-pro-sidebar";
+import { ProSidebar, Menu, MenuItem, SubMenu } from "react-pro-sidebar";
 import { Box, IconButton, Typography, useTheme } from "@mui/material";
 import { Link, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -135,6 +135,17 @@ const Sidebar = ({ session }) => {
                     color: `${(theme.palette.mode === "dark" ? colors.greenAccent[300] : colors.greenAccent[500])} !important`,
                     background: "rgba(255,255,255,0.08) !important",
                 },
+                "& .pro-sub-menu > .pro-inner-item": {
+                    marginTop: "10px",
+                    fontWeight: "700",
+                    background: "rgba(255,255,255,0.05) !important",
+                },
+                "& .pro-sub-menu > .pro-inner-list-item": {
+                    background: "transparent !important",
+                },
+                "& .pro-sub-menu .pro-menu-item > .pro-inner-item": {
+                    paddingInlineStart: collapsed ? "18px !important" : "30px !important",
+                },
             }}
         >
             <ProSidebar collapsed={collapsed}>
@@ -161,16 +172,11 @@ const Sidebar = ({ session }) => {
                     </MenuItem>
 
                     {sections.map((section) => ({ ...section, items: section.items.filter(canSee) })).filter((section) => section.items.length).map((section) => (
-                        <Box key={section.title}>
-                            {!collapsed && (
-                                <Typography
-                                    variant="overline"
-                                    color={theme.palette.mode === "light" ? colors.grey[700] : colors.grey[300]}
-                                    sx={{ display: "block", mt: "16px", mb: "5px", mx: "26px", textAlign: "start", fontSize: 9, fontWeight: 700 }}
-                                >
-                                    {t(section.title)}
-                                </Typography>
-                            )}
+                        <SubMenu
+                            key={section.title}
+                            title={t(section.title)}
+                            defaultOpen={section.items.some((item) => location.pathname === item.to)}
+                        >
                             {section.items.map((item) => (
                                 <MenuItem
                                     key={item.to}
@@ -182,7 +188,7 @@ const Sidebar = ({ session }) => {
                                     <Link to={item.to} />
                                 </MenuItem>
                             ))}
-                        </Box>
+                        </SubMenu>
                     ))}
                 </Menu>
             </ProSidebar>
