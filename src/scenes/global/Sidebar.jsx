@@ -35,6 +35,7 @@ const sections = [
             { title: "Dashboard", to: "/", permission: "dashboard", icon: <HomeOutlinedIcon /> },
             { title: "Notifications", to: "/notifications", permission: "notifications", icon: <NotificationsOutlinedIcon /> },
             { title: "Users", to: "/users", superOnly: true, icon: <PeopleOutlinedIcon /> },
+            { title: "Admin Management", to: "/admins", superOnly: true, icon: <PeopleOutlinedIcon /> },
             { title: "Wallet types", to: "/wallet-types", permission: "wallet-types", icon: <AccountBalanceWalletOutlinedIcon /> },
             { title: "Subscription plan", to: "/subscription-plans", permission: "subscription-plans", icon: <ReceiptOutlinedIcon /> },
             { title: "Contacts Information", to: "/contacts", permission: "contacts", icon: <ContactsOutlinedIcon /> },

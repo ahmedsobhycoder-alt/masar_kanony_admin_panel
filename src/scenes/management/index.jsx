@@ -14,7 +14,7 @@ const permissionOptions = [
   "settings", "policies", "analytics",
 ];
 
-export default function Management({ resource }) {
+export default function Management({ resource, adminOnly = false }) {
   const navigate = useNavigate();
   const users = resource === "users";
   const { t } = useTranslation();
@@ -47,7 +47,7 @@ export default function Management({ resource }) {
     setLoading(true);
     setError("");
     Promise.all([
-      axiosClient.get(path, { params: { page: page + 1, limit: pageSize, search: query } }),
+      axiosClient.get(path, { params: { page: page + 1, limit: pageSize, search: query, ...(adminOnly ? { role: "admin" } : {}) } }),
       axiosClient.get(`${path}/stats`),
     ]).then(([result, summary]) => {
       if (!active) return;
@@ -58,13 +58,13 @@ export default function Management({ resource }) {
       if (active) { setError(message(requestError)); setRows([]); setStats({}); setTotal(0); }
     }).finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
-  }, [path, page, pageSize, query, refresh]);
+  }, [adminOnly, path, page, pageSize, query, refresh]);
 
   const openEditor = (row = null) => {
     setActionError("");
     setEditor({ row });
     setValues(users ? {
-      name: row?.name || "", email: row?.email || "", phone: row?.phone || "", password: "", role: row?.role === "admin" ? "admin" : "user",
+      name: row?.name || "", email: row?.email || "", phone: row?.phone || "", password: "", role: adminOnly ? "admin" : row?.role === "admin" ? "admin" : "user",
       isSuperAdmin: row?.role === "admin" && row?.isSuperAdmin !== false,
       adminPermissions: row?.adminPermissions || [],
     } : { paymentType: row?.paymentType || "", phone: row?.phone || "" });
@@ -128,23 +128,23 @@ export default function Management({ resource }) {
   return (
     <Box m={{ xs: 2, md: 3 }}>
       <Box display="flex" justifyContent="space-between" alignItems="flex-start" gap={2}>
-        <Header title={users ? "Users" : "Wallet types"} subtitle={users ? "Manage users, subscriptions and access" : "Manage payment wallets and availability"} />
-        <Button variant="contained" startIcon={<AddRoundedIcon />} onClick={() => openEditor()}>{t(users ? "Create New User" : "Create wallet")}</Button>
+        <Header title={adminOnly ? "Admin Management" : users ? "Users" : "Wallet types"} subtitle={adminOnly ? "Create sub-admins and control sidebar access" : users ? "Manage users, subscriptions and access" : "Manage payment wallets and availability"} />
+        <Button variant="contained" startIcon={<AddRoundedIcon />} onClick={() => openEditor()}>{t(adminOnly ? "Add admin" : users ? "Create New User" : "Create wallet")}</Button>
       </Box>
       {error && <Alert severity="error" sx={{ mb: 2 }}>{t(error)}<Button onClick={() => setRefresh((previous) => previous + 1)}>{t("Retry")}</Button></Alert>}
       {notice && <Alert severity="success" onClose={() => setNotice("")} sx={{ mb: 2 }}>{t(notice)}</Alert>}
-      <Grid container spacing={2} mb={3}>
+      {!adminOnly && <Grid container spacing={2} mb={3}>
         {cards.map(([label, value]) => <Grid item xs={12} md={4} key={label}><Box className="court-detail-panel"><Typography color="text.secondary">{t(label)}</Typography><Typography variant="h3" mt={1}>{loading ? "…" : value ?? "—"}</Typography>{label === "Most used wallet type" && stats.mostUsed && <Typography variant="caption">{t("Based on all payment requests")}: {stats.mostUsed.count}</Typography>}</Box></Grid>)}
-      </Grid>
+      </Grid>}
       <TextField fullWidth label={t(users ? "Search by name, phone or email" : "Search by wallet type or phone")} value={search} onChange={(event) => setSearch(event.target.value)} sx={{ mb: 2 }} />
       <Box height="65vh" minHeight={400}><DataGrid rows={rows} getRowId={(row) => row._id || row.id} columns={columns.map((column) => ({ ...column, sortable: false }))} loading={loading} rowCount={total} page={page} pageSize={pageSize} pagination paginationMode="server" onPageChange={setPage} onPageSizeChange={(size) => { setPageSize(size); setPage(0); }} rowsPerPageOptions={[10, 25, 50]} disableSelectionOnClick disableColumnFilter disableColumnMenu localeText={{ noRowsLabel: t("No data"), footerPaginationRowsPerPage: t("Rows per page:") }} /></Box>
       <Dialog open={!!editor} onClose={() => { if (!saving) setEditor(null); }} fullWidth maxWidth="sm">
         <Box component="form" onSubmit={save}>
-          <DialogTitle>{t(editor?.row ? (users ? "Edit user" : "Edit wallet") : (users ? "Create New User" : "Create wallet"))}</DialogTitle>
+          <DialogTitle>{t(editor?.row ? (adminOnly ? "Edit admin" : users ? "Edit user" : "Edit wallet") : (adminOnly ? "Add admin" : users ? "Create New User" : "Create wallet"))}</DialogTitle>
           <DialogContent><Stack spacing={2} mt={1}>
             {actionError && <Alert severity="error">{t(actionError)}</Alert>}
             {editorFields.map(([name, label]) => <TextField key={name} fullWidth required label={t(label)} type={name === "password" ? "password" : name === "email" ? "email" : "text"} value={values[name] || ""} disabled={saving} onChange={(event) => setValues({ ...values, [name]: event.target.value })} inputProps={name === "phone" ? { pattern: "01[0125][0-9]{8}", maxLength: 11 } : name === "password" ? { minLength: 8, maxLength: 72 } : name === "name" ? { minLength: 2, maxLength: 20, pattern: ".*\\S.*" } : name === "paymentType" ? { minLength: 2, maxLength: 50, pattern: ".*\\S.*" } : {}} />)}
-            {users && <TextField select label={t("Role")} value={values.role || "user"} disabled={saving} onChange={(event) => setValues({ ...values, role: event.target.value })}>{[...new Set([values.role, "user", "admin"])].filter(Boolean).map((role) => <MenuItem key={role} value={role}>{t(role)}</MenuItem>)}</TextField>}
+            {users && !adminOnly && <TextField select label={t("Role")} value={values.role || "user"} disabled={saving} onChange={(event) => setValues({ ...values, role: event.target.value })}>{[...new Set([values.role, "user", "admin"])].filter(Boolean).map((role) => <MenuItem key={role} value={role}>{t(role)}</MenuItem>)}</TextField>}
             {users && values.role === "admin" && <FormControlLabel control={<Checkbox checked={values.isSuperAdmin === true} disabled={saving} onChange={(event) => setValues({ ...values, isSuperAdmin: event.target.checked })} />} label={t("Super admin (full access)")} />}
             {users && values.role === "admin" && !values.isSuperAdmin && <Box><FormLabel>{t("Sidebar permissions")}</FormLabel><FormGroup row>
               {permissionOptions.map((permission) => <FormControlLabel key={permission} sx={{ width: { xs: "100%", sm: "45%" } }} control={<Checkbox checked={values.adminPermissions?.includes(permission) || false} disabled={saving} onChange={(event) => setValues((current) => ({ ...current, adminPermissions: event.target.checked ? [...(current.adminPermissions || []), permission] : (current.adminPermissions || []).filter((item) => item !== permission) }))} />} label={t(permission)} />)}

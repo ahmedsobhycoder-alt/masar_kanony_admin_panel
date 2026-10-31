@@ -115,6 +115,7 @@ function App() {
               <Route path="/" element={guard(<Dashboard user={session.user} />, "dashboard")} />
               <Route path="/team" element={guard(<Management key="users" resource="users" />, "users", true)} />
               <Route path="/users" element={guard(<Management key="users" resource="users" />, "users", true)} />
+              <Route path="/admins" element={guard(<Management key="admins" resource="users" adminOnly />, "users", true)} />
               <Route path="/users/:id" element={guard(<UserDetails />, "users", true)} />
               <Route path="/payments" element={guard(<Payments />, "payments")} />
               <Route path="/payments/:id" element={<PaymentDetails />} />
