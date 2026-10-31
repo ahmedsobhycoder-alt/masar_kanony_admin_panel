@@ -181,6 +181,45 @@ const PolicySettings = ({ type, title, subtitle }) => {
         </Alert>
       )}
       <Box component="form" onSubmit={handleSave} maxWidth="1000px">
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          flexWrap="wrap"
+          gap={2}
+          mb={3}
+        >
+          <Button
+            type="button"
+            startIcon={<AddOutlinedIcon />}
+            onClick={addSection}
+            disabled={loading || saving}
+          >
+            {t("Add section")}
+          </Button>
+          <Box display="flex" flexWrap="wrap" gap={1.5}>
+            {hasPolicy && (
+              <Button
+                color="error"
+                variant="outlined"
+                startIcon={<DeleteOutlineOutlinedIcon />}
+                onClick={() => setConfirmDelete(true)}
+                disabled={loading || saving}
+              >
+                {t("Delete")}
+              </Button>
+            )}
+            <Button
+              type="submit"
+              variant="contained"
+              color="secondary"
+              startIcon={<SaveOutlinedIcon />}
+              disabled={loading || saving}
+            >
+              {saving ? t("Saving...") : hasPolicy ? t("Save changes") : t("Create policy")}
+            </Button>
+          </Box>
+        </Box>
         <TextField
           fullWidth
           required
@@ -281,38 +320,6 @@ const PolicySettings = ({ type, title, subtitle }) => {
             </Grid>
           </Box>
         ))}
-        <Box display="flex" justifyContent="space-between" gap={2} mt={2}>
-          <Button
-            type="button"
-            startIcon={<AddOutlinedIcon />}
-            onClick={addSection}
-            disabled={loading || saving}
-          >
-            {t("Add section")}
-          </Button>
-          <Box display="flex" gap={1.5}>
-            {hasPolicy && (
-              <Button
-                color="error"
-                variant="outlined"
-                startIcon={<DeleteOutlineOutlinedIcon />}
-                onClick={() => setConfirmDelete(true)}
-                disabled={loading || saving}
-              >
-                {t("Delete")}
-              </Button>
-            )}
-            <Button
-              type="submit"
-              variant="contained"
-              color="secondary"
-              startIcon={<SaveOutlinedIcon />}
-              disabled={loading || saving}
-            >
-              {saving ? t("Saving...") : hasPolicy ? t("Save changes") : t("Create policy")}
-            </Button>
-          </Box>
-        </Box>
       </Box>
       <Dialog open={confirmDelete} onClose={() => !saving && setConfirmDelete(false)}>
         <DialogTitle>{t(type === "termsAndConditions" ? "Delete terms & conditions?" : "Delete privacy policy?")}</DialogTitle>

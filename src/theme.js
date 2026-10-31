@@ -228,12 +228,27 @@ export const ColorModeContext = createContext({
 });
 
 export const useMode = (direction = "ltr") => {
-  const [mode, setMode] = useState("light");
+  const [mode, setMode] = useState(() => {
+    try {
+      const savedMode = window.localStorage.getItem("masar-admin-color-mode");
+      return savedMode === "dark" || savedMode === "light" ? savedMode : "light";
+    } catch {
+      return "light";
+    }
+  });
 
   const colorMode = useMemo(
     () => ({
       toggleColorMode: () =>
-        setMode((prev) => (prev === "light" ? "dark" : "light")),
+        setMode((prev) => {
+          const nextMode = prev === "light" ? "dark" : "light";
+          try {
+            window.localStorage.setItem("masar-admin-color-mode", nextMode);
+          } catch {
+            // The selected mode still works when browser storage is unavailable.
+          }
+          return nextMode;
+        }),
     }),
     []
   );
