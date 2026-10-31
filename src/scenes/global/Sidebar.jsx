@@ -153,7 +153,7 @@ const Sidebar = ({ session }) => {
                                         <Typography variant="caption" color={(theme.palette.mode === "dark" ? colors.greenAccent[300] : colors.greenAccent[500])}>مسار قانوني</Typography>
                                     </Box>
                                 </Box>
-                                <IconButton aria-label="Collapse sidebar" onClick={(event) => { event.stopPropagation(); setCollapsed((value) => !value); }} size="small">
+                                <IconButton aria-label={t("Collapse sidebar")} onClick={(event) => { event.stopPropagation(); setCollapsed((value) => !value); }} size="small">
                                     <MenuOutlinedIcon sx={{ color: sidebarText }} />
                                 </IconButton>
                             </Box>

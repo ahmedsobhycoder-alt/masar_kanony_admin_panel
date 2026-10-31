@@ -48,7 +48,7 @@ const ltrCache = createCache({ key: "mui" });
 const rtlCache = createCache({ key: "muirtl", stylisPlugins: [prefixer, rtlPlugin] });
 
 function App() {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const isArabic = i18n.resolvedLanguage?.startsWith("ar");
   const direction = isArabic ? "rtl" : "ltr";
   const [theme, colorMode] = useMode(direction);
@@ -92,7 +92,7 @@ function App() {
     const user = session?.user || {};
     const superAdmin = user.role === "admin" && user.isSuperAdmin !== false;
     const allowed = superAdmin || (!superOnly && user.adminPermissions?.includes(permission));
-    return allowed ? element : <div style={{ padding: 32 }}>Access denied</div>;
+    return allowed ? element : <div style={{ padding: 32 }}>{t("Access denied")}</div>;
   };
 
   useEffect(() => {

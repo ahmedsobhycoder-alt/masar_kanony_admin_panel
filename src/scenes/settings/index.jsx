@@ -205,7 +205,7 @@ const Settings = () => {
                 onClick={() => setConfirmDelete(true)}
                 disabled={saving || loading}
               >
-                Delete settings
+                {t("Delete settings")}
               </Button>
             )}
             <Button
@@ -216,20 +216,20 @@ const Settings = () => {
               disabled={saving || loading}
               sx={{ ml: "auto" }}
             >
-              {saving ? "Saving..." : hasConfig ? "Save changes" : "Create settings"}
+              {saving ? t("Saving...") : hasConfig ? t("Save changes") : t("Create settings")}
             </Button>
           </Grid>
         </Grid>
       </Box>
       <Dialog open={confirmDelete} onClose={() => !saving && setConfirmDelete(false)}>
-        <DialogTitle>Delete app settings?</DialogTitle>
+        <DialogTitle>{t("Delete app settings?")}</DialogTitle>
         <DialogContent>
-          <DialogContentText>This removes the app configuration record.</DialogContentText>
+          <DialogContentText>{t("This removes the app configuration record.")}</DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setConfirmDelete(false)} disabled={saving}>Cancel</Button>
+          <Button onClick={() => setConfirmDelete(false)} disabled={saving}>{t("Cancel")}</Button>
           <Button color="error" onClick={handleDelete} disabled={saving}>
-            {saving ? "Deleting..." : "Delete"}
+            {saving ? t("Deleting...") : t("Delete")}
           </Button>
         </DialogActions>
       </Dialog>
