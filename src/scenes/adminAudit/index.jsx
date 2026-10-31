@@ -4,6 +4,7 @@ import { DataGrid } from "@mui/x-data-grid";
 import RestoreRoundedIcon from "@mui/icons-material/RestoreRounded";
 import { useTranslation } from "react-i18next";
 import Header from "../../components/Header";
+import DataGridPagination from "../../components/DataGridPagination";
 import axiosClient from "../../api/axoisClient";
 
 const errorMessage = (error) => error.response?.data?.message || error.message || "Operation failed";
@@ -61,8 +62,25 @@ export default function AdminAuditLogs() {
       <TextField select label={t("Item type")} value={resource} onChange={(event) => { setResource(event.target.value); setPage(0); }} sx={{ minWidth: 180 }}><MenuItem value="">{t("All")}</MenuItem>{["court", "floor", "office"].map((value) => <MenuItem key={value} value={value}>{t(value)}</MenuItem>)}</TextField>
       <TextField select label={t("Action")} value={action} onChange={(event) => { setAction(event.target.value); setPage(0); }} sx={{ minWidth: 180 }}><MenuItem value="">{t("All")}</MenuItem>{["updated", "deleted"].map((value) => <MenuItem key={value} value={value}>{t(value)}</MenuItem>)}</TextField>
     </Stack>
-    <Box height="70vh" minHeight={420}><DataGrid rows={rows} getRowId={(row) => row._id} columns={columns} loading={loading} rowCount={total} page={page} pageSize={pageSize} paginationMode="server" onPageChange={setPage} onPageSizeChange={(size) => { setPageSize(size); setPage(0); }} rowsPerPageOptions={[10, 20, 50]} disableSelectionOnClick /></Box>
+    <Box height="70vh" minHeight={420}>
+      <DataGrid
+        rows={rows}
+        getRowId={(row) => row._id}
+        columns={columns}
+        loading={loading}
+        rowCount={total}
+        page={page}
+        pageSize={pageSize}
+        paginationMode="server"
+        onPageChange={setPage}
+        onPageSizeChange={(size) => { setPageSize(size); setPage(0); }}
+        rowsPerPageOptions={[10, 20, 50]}
+        components={{ Pagination: DataGridPagination }}
+        componentsProps={{ pagination: { pageSizeOptions: [10, 20, 50] } }}
+        localeText={{ noRowsLabel: t("No data") }}
+        disableSelectionOnClick
+      />
+    </Box>
     <Dialog open={!!restore} onClose={() => !saving && setRestore(null)} fullWidth maxWidth="xs"><DialogTitle>{t("Restore item?")}</DialogTitle><DialogContent><DialogContentText>{t("The saved version will replace the current item. Related floors and offices are restored with a deleted court.")}<br />{restore?.resourceName}</DialogContentText></DialogContent><DialogActions><Button disabled={saving} onClick={() => setRestore(null)}>{t("Cancel")}</Button><Button disabled={saving} variant="contained" onClick={confirmRestore}>{t(saving ? "Restoring..." : "Restore")}</Button></DialogActions></Dialog>
   </Box>;
 }
-
