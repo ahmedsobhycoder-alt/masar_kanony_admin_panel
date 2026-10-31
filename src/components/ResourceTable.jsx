@@ -17,12 +17,13 @@ import {
   useMediaQuery,
   useTheme,
 } from "@mui/material";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 import { useTranslation } from "react-i18next";
 import EditOutlinedIcon from "@mui/icons-material/EditOutlined";
 import DeleteOutlineOutlinedIcon from "@mui/icons-material/DeleteOutlineOutlined";
 import Header from "./Header";
 import { tokens } from "../theme";
+import DataGridToolbar from "./DataGridToolbar";
 
 export const displayRelatedValue = (value) => {
   if (!value || typeof value !== "object") return value || "—";
@@ -68,6 +69,7 @@ const ResourceTable = ({ title, subtitle, getPage, columns, crud, headerActions,
     sortable: false,
     filterable: false,
     disableColumnMenu: true,
+    disableExport: true,
     headerClassName: "resource-actions-header",
     cellClassName: "resource-actions-cell",
     renderCell: (params) => (
@@ -234,16 +236,15 @@ const ResourceTable = ({ title, subtitle, getPage, columns, crud, headerActions,
             setPage(0);
           }}
           rowsPerPageOptions={[5, 10, 20]}
-          components={{ Toolbar: GridToolbar }}
+          components={{ Toolbar: DataGridToolbar }}
           componentsProps={{
             toolbar: {
-              showQuickFilter: false,
+              fileName: title.toLowerCase().replace(/\s+/g, "-"),
             },
           }}
           localeText={{
             noRowsLabel: t(`No ${title.toLowerCase()} found`),
             toolbarColumns: t("Columns"),
-            toolbarFilters: t("Filters"),
             toolbarDensity: t("Density"),
             toolbarExport: t("Export"),
             footerPaginationRowsPerPage: t("Rows per page:"),

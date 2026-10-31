@@ -1,10 +1,11 @@
 import { Box } from "@mui/material";
-import { DataGrid, GridToolbar } from "@mui/x-data-grid";
+import { DataGrid } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import { mockDataContacts } from "../../data/mockData";
 import Header from "../../components/Header";
 import { useTheme } from "@mui/material";
 import { useTranslation } from "react-i18next";
+import DataGridToolbar from "../../components/DataGridToolbar";
 
 const Contacts = () => {
   const { t } = useTranslation();
@@ -95,10 +96,10 @@ const Contacts = () => {
         <DataGrid
           rows={mockDataContacts}
           columns={columns}
-          components={{ Toolbar: GridToolbar }}
+          components={{ Toolbar: DataGridToolbar }}
+          componentsProps={{ toolbar: { fileName: "contacts" } }}
           localeText={{
             toolbarColumns: t("Columns"),
-            toolbarFilters: t("Filters"),
             toolbarDensity: t("Density"),
             toolbarExport: t("Export"),
             footerPaginationRowsPerPage: t("Rows per page:"),
